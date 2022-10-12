@@ -1,0 +1,24 @@
+{
+    "name": "React Function Monitor",
+    "version": "0.0.1",
+    "description": "Adds a panel devtools that can monitor function invocations.",
+    "manifest_version": 3,
+    "author": "Chris Parks",
+    "background": {
+        "service_worker": "/chrome-pages/background.js",
+        "type":"module"
+      },
+      "devtools_page": "/chrome-pages/devtools_page.html",
+      "permissions": [
+        "activeTab",
+        "scripting",
+        "tabs",
+        "debugger",
+        "webRequest",
+        "webNavigation"
+    ],
+    "host_permissions":[
+        "https://*/*"
+    ]
+    
+}
