@@ -15,6 +15,6 @@ export default function ToggleWrapperButton({ buttonStatus, clickHandler }) {
 
   return (<div id="buttonDiv">
     <button id="toggleWrapperButton"
-      className={classId} onClick={clickHandler}> {buttonText + ' (' + buttonStatus + ')'}</button>
+      className={classId} onClick={clickHandler}> {buttonText}</button>
   </div>)
 }

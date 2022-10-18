@@ -1,4 +1,5 @@
 import './functionInfoPanel.css'
+import { Divider } from 'primereact/divider';
 export default function FunctionInfoPanel({functionName, functionParentPath}){
     return(    <div id="functionInfoContainer">
     <div id="functionNamePanel" className="functionInfoPanel">
@@ -9,6 +10,7 @@ export default function FunctionInfoPanel({functionName, functionParentPath}){
     <span className='infoLabel' id="functionInfoPanel">Function Path</span>
       <strong className='infoLabelSpan'>{functionParentPath}</strong>
     </div>
+
   </div>)
 
 }

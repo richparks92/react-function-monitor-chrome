@@ -3,7 +3,9 @@ import ToggleWrapperButton from './button.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
 import { useState } from "react";
 import { wait } from '../scripts/helpers.js';
+
 /*global chrome*/
+
 export default function AppContainer(props) {
   const [buttonStatus, setButtonStatus] = useState('inactive')
   const [functionInfo, setFunctionInfo] = useState({ fnName: 'TestFn', fnParentPath: 'window.TestObj' })
@@ -15,9 +17,10 @@ export default function AppContainer(props) {
     (async () => {
       if (message.type == 'WINDOW_LOADED' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
         if (client.enableWrapOnPageLoad == true) {
+          //Should add setting for wait settings
           await wait(1000)
           await client.wrapFunction(client.fnPath)
-          updateInfo()
+          updateStateFromClientDetails()
         }
         sendResponse(client.getState())
       } else if (message.type == 'FUNCTION_CALL_DETAILS'){
@@ -26,7 +29,7 @@ export default function AppContainer(props) {
         sendResponse()
       } else if (message.type == 'BEFORE_NAVIGATE'){
         console.log('Before Navigate')
-        setButtonStatus('pending')
+        if (client.enableWrapOnPageLoad && client.isFnWrapped) setButtonStatus('pending')
         sendResponse()
       }
 
@@ -34,7 +37,7 @@ export default function AppContainer(props) {
     })()
     return true
   }
-  const updateInfo = ()=>{
+  const updateStateFromClientDetails = ()=>{
     setFunctionInfo({ fnName: client.fnDetails.name, fnParentPath: client.fnDetails.parentPath })
     setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
   }
@@ -47,7 +50,7 @@ if(!client.windowLoaded){
 
   const toggleClickHandler = async () => {
     await client.toggleFunctionWrapper();
-    updateInfo()
+    updateStateFromClientDetails()
   }
   return (
     <div className="App-body-container">
