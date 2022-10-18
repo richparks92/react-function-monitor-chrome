@@ -25,18 +25,21 @@ export default class DevToolsDebugClient {
     }
   }
   async toggleFunctionWrapper() {
+    let toggleSuccess
 
     //If toggle is initially OFF, evaluate if it should be turned on
     if (!this.isFnWrapped) {
 
-      const toggleSuccess = await this.wrapFunction(this.fnPath)
+       toggleSuccess = await this.wrapFunction(this.fnPath)
+
       if (toggleSuccess) this.isFnWrapped = true
 
       //If toggle is initially ON, unwrap
     } else {
-      const toggleSuccess = await this.unwrapFunction(this.fnPath)
+       toggleSuccess = await this.unwrapFunction(this.fnPath)
       this.isFnWrapped = false
     }
+    return this.isFnWrapped
   }
 
   //Wrap function and if successful update isFnWrapped
@@ -49,6 +52,7 @@ export default class DevToolsDebugClient {
 
     try {
       const existsCheck = await evaluateExpressionAsync(wrappingExpressions.functionExistsCheck, true, 50, 100)
+      if (!existsCheck) return false
       await evaluateExpressionAsync(wrappingExpressions.logStart)
       await evaluateExpressionAsync(wrappingExpressions.copyMethod)
       await evaluateExpressionAsync(wrappingExpressions.wrapFunction)
@@ -132,8 +136,6 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
   
   let lastResult
 
-  console.log('--> Evaluating expression:')
-  console.log(expression)
   async function sendExpression(expression) {
     return new Promise((resolve, reject) => {
       chrome.devtools.inspectedWindow.eval(expression, (result, exceptionInfo) => {
@@ -150,8 +152,8 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
     try {
       attemptResult = await sendExpression(expression);
       lastResult = attemptResult
-      console.log(`Attempt #${attempt} Result | Validation Value`)
-      console.log(attemptResult + ' | ' + validationValue)
+      // console.log(`Attempt #${attempt} Result | Validation Value`)
+      // console.log(attemptResult + ' | ' + validationValue)
       if (attemptResult === validationValue) break;
 
     } catch (e) {
@@ -162,6 +164,7 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
     if (attempt < retryAttempts + 1) await wait(retryInterval || RETRY_INTERVAL_DEFAULT)
 
   }
+  //Will implement check for isError
   return lastResult
 
 }

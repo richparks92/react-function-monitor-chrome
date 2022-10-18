@@ -1,4 +1,6 @@
 import './button.css'
+import { useEffect } from 'react'
+
 export default function ToggleWrapperButton({ buttonStatus, clickHandler }) {
   const buttonStatusArray = [
     { buttonStatus: 'notReady', buttonText: 'No function input' },
@@ -6,6 +8,7 @@ export default function ToggleWrapperButton({ buttonStatus, clickHandler }) {
     { buttonStatus: 'pending', buttonText: 'Wrapping Function...' },
     { buttonStatus: 'active', buttonText: 'Unwrap Function' }
   ]
+  
   const buttonStatusInfo = buttonStatusArray.filter((btnStat) => btnStat.buttonStatus === buttonStatus)[0]
   const buttonText = buttonStatusInfo.buttonText
   const classId = 'toggleWrapperButton-' + buttonStatus
