@@ -1,5 +1,5 @@
 import './App.css';
-
+import React from 'react'
 
 import DevToolsDebugClient from './scripts/devToolsDebugClient.js'
 import AppContainer from './components/appContainer';

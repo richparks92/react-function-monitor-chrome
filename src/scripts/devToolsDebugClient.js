@@ -163,7 +163,7 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
   }
 
   retryAttempts = (retryAttempts || retryInterval) ? retryAttempts || RETRY_ATTEMPTS_DEFAULT : 0
-  const retry = retryAttempts > 0
+
   for (let attempt = 1; attempt <= retryAttempts + 1; attempt++) {
     let attemptResult
     try {

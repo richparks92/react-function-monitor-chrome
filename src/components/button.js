@@ -1,5 +1,5 @@
 import './button.css'
-import { useEffect } from 'react'
+import React from 'react'
 
 export default function ToggleWrapperButton({ buttonStatus, clickHandler }) {
   const buttonStatusArray = [

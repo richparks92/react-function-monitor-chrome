@@ -1,9 +1,7 @@
-/*global chrome*/
-
 export const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 export const extractArguments = (fnString) => {
-  var rgx = /function\((?<args>[^\)]*)/g
+  var rgx = /function\((?<args>[^)]*)/g
   var extracted = rgx.exec(fnString)
   let argsStr = ''
   if (extracted.groups) {

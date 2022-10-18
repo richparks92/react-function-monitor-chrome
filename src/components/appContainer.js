@@ -1,8 +1,9 @@
 import './appContainer.css'
 import ToggleWrapperButton from './button.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
-import { useState } from "react";
+import React, { useState } from "react";
 import { wait } from '../scripts/helpers.js';
+import PrimeTest from './primeTest.js'
 
 /*global chrome*/
 
@@ -23,30 +24,30 @@ export default function AppContainer(props) {
           updateStateFromClientDetails()
         }
         sendResponse(client.getState())
-      } else if (message.type == 'FUNCTION_CALL_DETAILS'){
+      } else if (message.type == 'FUNCTION_CALL_DETAILS') {
         console.log('FUNCTION CALL DETAILS:')
         console.log(message.data)
         sendResponse()
-      } else if (message.type == 'BEFORE_NAVIGATE'){
+      } else if (message.type == 'BEFORE_NAVIGATE') {
         console.log('Before Navigate')
         if (client.enableWrapOnPageLoad && client.isFnWrapped) setButtonStatus('pending')
         sendResponse()
       }
 
-      
+
     })()
     return true
   }
-  const updateStateFromClientDetails = ()=>{
+  const updateStateFromClientDetails = () => {
     setFunctionInfo({ fnName: client.fnDetails.name, fnParentPath: client.fnDetails.parentPath })
     setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
   }
 
-if(!client.windowLoaded){
-  chrome.runtime.onMessage.addListener(onMessageHandler)
-  client.windowLoaded =true
-  console.log('Adding window loaded listener.')
-} 
+  if (!client.windowLoaded) {
+    chrome.runtime.onMessage.addListener(onMessageHandler)
+    client.windowLoaded = true
+    console.log('Adding window loaded listener.')
+  }
 
   const toggleClickHandler = async () => {
     await client.toggleFunctionWrapper();
@@ -56,6 +57,6 @@ if(!client.windowLoaded){
     <div className="App-body-container">
       <ToggleWrapperButton clickHandler={toggleClickHandler} buttonStatus={buttonStatus}></ToggleWrapperButton>
       <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
-
+      <PrimeTest></PrimeTest>
     </div>)
 }
