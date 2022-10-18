@@ -12,7 +12,5 @@ export default function FunctionInfoPanel({functionName, functionParentPath}){
       <strong className='infoLabelSpan'>{functionParentPath}</strong>
     </div>
   </div>
-  
   )
-
 }

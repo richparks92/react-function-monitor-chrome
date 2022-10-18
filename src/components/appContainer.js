@@ -3,7 +3,7 @@ import ToggleWrapperButton from './button.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
 import React, { useState } from "react";
 import { wait } from '../scripts/helpers.js';
-import PrimeTest from './primeTest.js'
+import DividerDemo from './dividerDemo.js'
 
 /*global chrome*/
 
@@ -57,6 +57,6 @@ export default function AppContainer(props) {
     <div className="App-body-container">
       <ToggleWrapperButton clickHandler={toggleClickHandler} buttonStatus={buttonStatus}></ToggleWrapperButton>
       <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
-      <PrimeTest></PrimeTest>
+      <DividerDemo></DividerDemo>
     </div>)
 }
