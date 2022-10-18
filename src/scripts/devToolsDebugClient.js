@@ -1,14 +1,14 @@
 /*global chrome*/
-import { wait } from './helpers.js'
+import { wait, extractArguments } from './helpers.js'
 export default class DevToolsDebugClient {
   constructor(fnPath) {
     this.isFnWrapped = false
-    this.splitFnPath(fnPath)
+    this.setFnDetails(fnPath)
     this.enableWrapOnPageLoad = false
 
   }
 
-  splitFnPath(fnPath) {
+  setFnDetails(fnPath) {
     if (fnPath && fnPath.length) {
       this.fnPath = fnPath
       let fnPathArray = fnPath.split('.')
@@ -54,6 +54,11 @@ export default class DevToolsDebugClient {
       const existsCheck = await evaluateExpressionAsync(wrappingExpressions.functionExistsCheck, true, 50, 100)
       if (!existsCheck) return false
       await evaluateExpressionAsync(wrappingExpressions.logStart)
+      const fnStringified = await evaluateExpressionAsync(wrappingExpressions.getFnStringified)
+      this.fnStringified = fnStringified
+      this.fnArgsArray = extractArguments(fnStringified)
+      console.log('Args array:')
+      console.log(this.fnArgsArray)
       await evaluateExpressionAsync(wrappingExpressions.copyMethod)
       await evaluateExpressionAsync(wrappingExpressions.wrapFunction)
       await evaluateExpressionAsync(wrappingExpressions.logEnd)
@@ -98,6 +103,7 @@ function getSplitWrapperExpressionStrings(fnPath) {
   let wrappingExpressions = {}
   wrappingExpressions.functionExistsCheck = `typeof(${fnPath})==='function'`
   wrappingExpressions.logStart = `console.log("Wrapping function [${fnPath}]")`
+  wrappingExpressions.getFnStringified = `${fnPath}.prototype.constructor.toString()`
   wrappingExpressions.copyMethod =
     `var method = ${fnPath}
     var _fnWrapper = {}
