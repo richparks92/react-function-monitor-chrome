@@ -2,6 +2,7 @@
 import { wait, extractArguments } from './helpers.js'
 export default class DevToolsDebugClient {
   constructor(fnPath) {
+    this.fnDetails={}
     this.isFnWrapped = false
     this.setFnDetails(fnPath)
     this.enableWrapOnPageLoad = false
@@ -9,19 +10,28 @@ export default class DevToolsDebugClient {
   }
 
   setFnDetails(fnPath) {
+    //this.clearFnDetails()
     if (fnPath && fnPath.length) {
-      this.fnPath = fnPath
+      this.fnDetails.path = fnPath
       let fnPathArray = fnPath.split('.')
-      this.fnName = fnPathArray[fnPathArray.length - 1]
-      if (fnPathArray.length > 1) this.fnParentPath = fnPathArray.slice(0, -1).join('.')
+      this.fnDetails.name = fnPathArray[fnPathArray.length - 1]
+      if (fnPathArray.length > 1) this.fnDetails.parentPath = fnPathArray.slice(0, -1).join('.')
     }
+  }
+
+   clearFnDetails(){
+    console.log('Clearing function')
+    if (this.isFnWrapped) this.unwrapFunction(this.fnDetails.path).then(()=>{console.log('Function unwrapped.')})
+    this.fnDetails = {}
+
   }
   getState() {
     return {
       isFnWrapped: this.isFnWrapped,
-      fnName: this.fnName,
-      fnPath: this.fnPath,
-      fnParentPath: this.fnParentPath
+      fnName: this.fnDetails.name,
+      fnPath: this.FnDetails.path,
+      fnParentPath: this.fnDetails.parentPath,
+      fnArgsArray: this.fnDetails.argsArray
     }
   }
   async toggleFunctionWrapper() {
@@ -43,7 +53,8 @@ export default class DevToolsDebugClient {
   }
 
   //Wrap function and if successful update isFnWrapped
-  async wrapFunction(fnPath) {
+  async wrapFunction() {
+    const fnPath = this.fnDetails.path
     this.enableWrapOnPageLoad = true
     let evaluateSuccess = false
     let injectSuccess = false
@@ -55,10 +66,10 @@ export default class DevToolsDebugClient {
       if (!existsCheck) return false
       await evaluateExpressionAsync(wrappingExpressions.logStart)
       const fnStringified = await evaluateExpressionAsync(wrappingExpressions.getFnStringified)
-      this.fnStringified = fnStringified
-      this.fnArgsArray = extractArguments(fnStringified)
+      this.fnDetails.fnStringified = fnStringified
+      this.fnDetails.argsArray = extractArguments(fnStringified)
       console.log('Args array:')
-      console.log(this.fnArgsArray)
+      console.log(this.fnDetails.argsArray)
       await evaluateExpressionAsync(wrappingExpressions.copyMethod)
       await evaluateExpressionAsync(wrappingExpressions.wrapFunction)
       await evaluateExpressionAsync(wrappingExpressions.logEnd)
@@ -73,7 +84,8 @@ export default class DevToolsDebugClient {
     return evaluateSuccess && injectSuccess
   }
 
-  async unwrapFunction(fnPath) {
+  async unwrapFunction() {
+    const fnPath = this.fnDetails.path
     this.enableWrapOnPageLoad = false
     let isSuccess = false
     const unwrappingExpressions = getSplitUnwrapperExpressionStrings(fnPath)

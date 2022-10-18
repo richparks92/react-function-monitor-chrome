@@ -6,18 +6,21 @@ import { wait } from '../scripts/helpers.js';
 /*global chrome*/
 export default function AppContainer(props) {
   const [buttonStatus, setButtonStatus] = useState('inactive')
-  const [functionInfo, setFunctionInfo] = useState({ functionName: 'TestFn', functionParentPath: 'window.TestObj' })
+  const [functionInfo, setFunctionInfo] = useState({ fnName: 'TestFn', fnParentPath: 'window.TestObj' })
   const [invocations, setInvocations] = useState([])
   const client = props.client
 
+  const updateInfo = ()=>{
+    setFunctionInfo({ fnName: client.fnDetails.name, fnParentPath: client.fnDetails.parentPath })
+    setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
+  }
   const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
       if (message.type == 'WINDOW_LOADED' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
         if (client.enableWrapOnPageLoad == true) {
           await wait(1000)
           await client.wrapFunction(client.fnPath)
-          setFunctionInfo({ functionName: client.fnName, functionParentPath: client.fnParentPath })
-          setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
+          updateInfo()
         }
         sendResponse(client.getState())
       } else if (message.type == 'FUNCTION_CALL_DETAILS'){
@@ -38,13 +41,12 @@ if(!client.windowLoaded){
 
   const toggleClickHandler = async () => {
     await client.toggleFunctionWrapper();
-    setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
-    setFunctionInfo({ functionName: client.fnName, functionParentPath: client.fnParentPath })
+    updateInfo()
   }
   return (
     <div className="App-body-container">
       <ToggleWrapperButton clickHandler={toggleClickHandler} buttonStatus={buttonStatus}></ToggleWrapperButton>
-      <FunctionInfoPanel functionName={functionInfo.functionName} functionParentPath={functionInfo.functionParentPath}></FunctionInfoPanel>
+      <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
 
     </div>)
 }
