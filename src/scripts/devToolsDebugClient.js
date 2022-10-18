@@ -6,11 +6,10 @@ export default class DevToolsDebugClient {
     this.isFnWrapped = false
     this.setFnDetails(fnPath)
     this.enableWrapOnPageLoad = false
-
   }
 
   setFnDetails(fnPath) {
-    //this.clearFnDetails()
+    (async()=>await this.clearFnDetails())()
     if (fnPath && fnPath.length) {
       this.fnDetails.path = fnPath
       let fnPathArray = fnPath.split('.')
@@ -19,9 +18,9 @@ export default class DevToolsDebugClient {
     }
   }
 
-   clearFnDetails(){
+   async clearFnDetails(){
     console.log('Clearing function')
-    if (this.isFnWrapped) this.unwrapFunction(this.fnDetails.path).then(()=>{console.log('Function unwrapped.')})
+    if (this.isFnWrapped) await this.unwrapFunction(this.fnDetails.path)
     this.fnDetails = {}
 
   }
@@ -29,7 +28,7 @@ export default class DevToolsDebugClient {
     return {
       isFnWrapped: this.isFnWrapped,
       fnName: this.fnDetails.name,
-      fnPath: this.FnDetails.path,
+      fnPath: this.fnDetails.path,
       fnParentPath: this.fnDetails.parentPath,
       fnArgsArray: this.fnDetails.argsArray
     }
@@ -170,8 +169,7 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
     try {
       attemptResult = await sendExpression(expression);
       lastResult = attemptResult
-      // console.log(`Attempt #${attempt} Result | Validation Value`)
-      // console.log(attemptResult + ' | ' + validationValue)
+
       if (attemptResult === validationValue) break;
 
     } catch (e) {
@@ -184,6 +182,5 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
   }
   //Will implement check for isError
   return lastResult
-
 }
 

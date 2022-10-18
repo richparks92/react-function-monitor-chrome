@@ -11,7 +11,15 @@ const onCompletedHandler = async function (details) {
         }
     }
 }
-
+const onBeforeNavigateHandler= async function(details){
+    if (details.parentFrameId == -1 && details.tabId) {
+        try{
+            const res = await chrome.runtime.sendMessage({ type: 'BEFORE_NAVIGATE', tabId: details.tabId })
+        } catch(e){
+            console.log(e)
+        }
+    }
+}
 const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
         if (message.type == 'INJECT_SCRIPT_TO_TAB') {
@@ -38,3 +46,4 @@ const onMessageHandler = function (message, sender, sendResponse) {
 
 chrome.runtime.onMessage.addListener(onMessageHandler)
 chrome.webNavigation.onCompleted.addListener(onCompletedHandler)
+chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigateHandler)

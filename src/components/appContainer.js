@@ -10,10 +10,7 @@ export default function AppContainer(props) {
   const [invocations, setInvocations] = useState([])
   const client = props.client
 
-  const updateInfo = ()=>{
-    setFunctionInfo({ fnName: client.fnDetails.name, fnParentPath: client.fnDetails.parentPath })
-    setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
-  }
+
   const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
       if (message.type == 'WINDOW_LOADED' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
@@ -27,16 +24,25 @@ export default function AppContainer(props) {
         console.log('FUNCTION CALL DETAILS:')
         console.log(message.data)
         sendResponse()
+      } else if (message.type == 'BEFORE_NAVIGATE'){
+        console.log('Before Navigate')
+        setButtonStatus('pending')
+        sendResponse()
       }
 
       
     })()
     return true
   }
+  const updateInfo = ()=>{
+    setFunctionInfo({ fnName: client.fnDetails.name, fnParentPath: client.fnDetails.parentPath })
+    setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
+  }
+
 if(!client.windowLoaded){
   chrome.runtime.onMessage.addListener(onMessageHandler)
-  console.log('Adding window loaded listener.')
   client.windowLoaded =true
+  console.log('Adding window loaded listener.')
 } 
 
   const toggleClickHandler = async () => {

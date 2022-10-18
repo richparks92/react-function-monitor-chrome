@@ -1,6 +1,6 @@
 {
     "name": "React Function Monitor",
-    "version": "0.0.1",
+    "version": "0.5.0",
     "description": "Adds a panel devtools that can monitor function invocations.",
     "manifest_version": 3,
     "author": "Chris Parks",
