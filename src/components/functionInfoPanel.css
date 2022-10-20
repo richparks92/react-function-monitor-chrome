@@ -13,6 +13,7 @@
   #functionInfoContainer{
     display: flex;
     align-self: center;
+    margin-bottom: 1em;
   }
 
   .functionInfoPanel{

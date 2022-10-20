@@ -2,14 +2,15 @@
 import { wait, extractArguments } from './helpers.js'
 export default class DevToolsDebugClient {
   constructor(fnPath) {
-    this.fnDetails={}
+    this.fnDetails = {}
     this.isFnWrapped = false
     this.setFnDetails(fnPath)
     this.enableWrapOnPageLoad = false
+
   }
 
   setFnDetails(fnPath) {
-    (async()=>await this.clearFnDetails())()
+    (async () => await this.clearFnDetails())()
     if (fnPath && fnPath.length) {
       this.fnDetails.path = fnPath
       let fnPathArray = fnPath.split('.')
@@ -18,19 +19,26 @@ export default class DevToolsDebugClient {
     }
   }
 
-   async clearFnDetails(){
+  async clearFnDetails() {
     console.log('Clearing function')
     if (this.isFnWrapped) await this.unwrapFunction(this.fnDetails.path)
     this.fnDetails = {}
-
+    this.clearInvocationRecords()
   }
+
+  addInvocationRecord(invocationRecord) {
+    this.invocationRecords.push(invocationRecord)
+  }
+
+  clearInvocationRecords() {
+    this.invocationRecords = []
+  }
+
   getState() {
     return {
       isFnWrapped: this.isFnWrapped,
-      fnName: this.fnDetails.name,
-      fnPath: this.fnDetails.path,
-      fnParentPath: this.fnDetails.parentPath,
-      fnArgsArray: this.fnDetails.argsArray
+      fnDetails: this.fnDetails,
+      invocationRecords: this.invocationRecords
     }
   }
   async toggleFunctionWrapper() {
@@ -39,13 +47,13 @@ export default class DevToolsDebugClient {
     //If toggle is initially OFF, evaluate if it should be turned on
     if (!this.isFnWrapped) {
 
-       toggleSuccess = await this.wrapFunction(this.fnPath)
+      toggleSuccess = await this.wrapFunction(this.fnPath)
 
       if (toggleSuccess) this.isFnWrapped = true
 
       //If toggle is initially ON, unwrap
     } else {
-       toggleSuccess = await this.unwrapFunction(this.fnPath)
+      toggleSuccess = await this.unwrapFunction(this.fnPath)
       this.isFnWrapped = false
     }
     return this.isFnWrapped
@@ -59,27 +67,65 @@ export default class DevToolsDebugClient {
     let injectSuccess = false
 
     const wrappingExpressions = getSplitWrapperExpressionStrings(fnPath)
-
+    //Check if function exists
     try {
       const existsCheck = await evaluateExpressionAsync(wrappingExpressions.functionExistsCheck, true, 50, 100)
       if (!existsCheck) return false
-      await evaluateExpressionAsync(wrappingExpressions.logStart)
+
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+    //Log start
+    await evaluateExpressionAsync(wrappingExpressions.logStart)
+    //Get stringified function constructor so we can try to extract arguments
+    try {
       const fnStringified = await evaluateExpressionAsync(wrappingExpressions.getFnStringified)
-      this.fnDetails.fnStringified = fnStringified
-      this.fnDetails.argsArray = extractArguments(fnStringified)
+      if (typeof (fnStringified) === 'string') {
+        this.fnDetails.fnStringified = fnStringified
+        this.fnDetails.argsArray = extractArguments(fnStringified)
+      }
+
       console.log('Args array:')
       console.log(this.fnDetails.argsArray)
+    } catch (e) {
+      console.log("Error extracting function arguments from prototype:")
+      console.log(e)
+    }
+    //Copy function to *_fnWrapper.originalFunctionCopy*
+    try {
       await evaluateExpressionAsync(wrappingExpressions.copyMethod)
-      await evaluateExpressionAsync(wrappingExpressions.wrapFunction)
-      await evaluateExpressionAsync(wrappingExpressions.logEnd)
       evaluateSuccess = true
     } catch (e) {
-      console.log('Error evaluating expression while wrapping function.')
+      console.log('Error copying original function.')
       console.log(e)
       evaluateSuccess = false
     }
 
-    injectSuccess = await chrome.runtime.sendMessage({ type: 'INJECT_SCRIPT_TO_TAB', tabId: chrome.devtools.inspectedWindow.tabId })
+    try {
+      await evaluateExpressionAsync(wrappingExpressions.wrapFunction)
+    } catch (e) {
+      console.log('Error while wrapping function.')
+      console.log(e)
+      return false
+    }
+    //Log end 
+    await evaluateExpressionAsync(wrappingExpressions.logEnd)
+
+    //Inject script if not injected
+    if (!this.contentScriptInjected) {
+      try {
+        injectSuccess = await chrome.runtime.sendMessage({ type: 'INJECT_SCRIPT_TO_TAB', tabId: chrome.devtools.inspectedWindow.tabId })
+        if (injectSuccess) this.contentScriptInjected = true
+      } catch (e) {
+        console.log('Error sending message to inject script.')
+        console.log(e)
+        return false
+      }
+    }
+
+    if (evaluateSuccess && this.contentScriptInjected) return true
+
     return evaluateSuccess && injectSuccess
   }
 
@@ -114,7 +160,24 @@ function getSplitWrapperExpressionStrings(fnPath) {
   let wrappingExpressions = {}
   wrappingExpressions.functionExistsCheck = `typeof(${fnPath})==='function'`
   wrappingExpressions.logStart = `console.log("Wrapping function [${fnPath}]")`
-  wrappingExpressions.getFnStringified = `${fnPath}.prototype.constructor.toString()`
+  //wrappingExpressions.getFnStringified = `${fnPath}.prototype.constructor.toString()`
+  wrappingExpressions.getFnStringified = `
+  function getConstructorString(fn){
+
+    let stringified = ''
+  
+    if(fn.prototype) {
+      if(fn.prototype.constructor) 
+        stringified = fn.prototype.constructor.toString()
+        return stringified
+    } else if (fn.constructor){
+      stringified= fn.constructor.toString()
+      return stringified
+    }
+    return stringified
+  }
+  
+  getConstructorString(${fnPath})`
   wrappingExpressions.copyMethod =
     `var method = ${fnPath}
     var _fnWrapper = {}
@@ -124,14 +187,14 @@ function getSplitWrapperExpressionStrings(fnPath) {
     `${fnPath} = function(){
       var args = [].slice.call(arguments)
       method.apply(this, args)
-      window.postMessage({type: 'FUNCTION_CALL_EVENT', args: args})
+      window.postMessage({type: 'FUNCTION_CALL_EVENT', callArgs: args, timestamp: Date.now(), fnPath: '${fnPath}'})
+
     }`
 
   wrappingExpressions.logEnd = `console.log("Finished wrapping [${fnPath}] function")`
   return wrappingExpressions
 
 }
-
 
 function getSplitUnwrapperExpressionStrings(fnPath) {
   let unwrappingExpressions = {}
@@ -150,7 +213,7 @@ function getSplitUnwrapperExpressionStrings(fnPath) {
 async function evaluateExpressionAsync(expression, validationValue, retryAttempts, retryInterval) {
   const RETRY_ATTEMPTS_DEFAULT = 10
   const RETRY_INTERVAL_DEFAULT = 500
-  
+
   let lastResult
 
   async function sendExpression(expression) {
@@ -173,7 +236,10 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
       if (attemptResult === validationValue) break;
 
     } catch (e) {
+
       console.log(e)
+      console.log('Error occured while evaluating expression:')
+      console.log(expression)
       lastResult = e
       continue;
     }
@@ -183,4 +249,3 @@ async function evaluateExpressionAsync(expression, validationValue, retryAttempt
   //Will implement check for isError
   return lastResult
 }
-

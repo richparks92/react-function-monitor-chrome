@@ -10,6 +10,7 @@ export default function FunctionInfoPanel({functionName, functionParentPath}){
     <div id="functionNamePanel" className="functionInfoPanel">
       <Card title ="Function Name">{functionName}</Card>
     </div>
+    
     <div id="functionPathPanel" className='functionInfoPanel'>
     <Card title ="Function Path">{functionParentPath}</Card>
     </div>
