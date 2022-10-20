@@ -78,6 +78,7 @@ export default class DevToolsDebugClient {
     }
     //Log start
     await evaluateExpressionAsync(wrappingExpressions.logStart)
+
     //Get stringified function constructor so we can try to extract arguments
     try {
       const fnStringified = await evaluateExpressionAsync(wrappingExpressions.getFnStringified)
@@ -85,9 +86,6 @@ export default class DevToolsDebugClient {
         this.fnDetails.fnStringified = fnStringified
         this.fnDetails.argsArray = extractArguments(fnStringified)
       }
-
-      console.log('Args array:')
-      console.log(this.fnDetails.argsArray)
     } catch (e) {
       console.log("Error extracting function arguments from prototype:")
       console.log(e)
@@ -178,6 +176,7 @@ function getSplitWrapperExpressionStrings(fnPath) {
   }
   
   getConstructorString(${fnPath})`
+  
   wrappingExpressions.copyMethod =
     `var method = ${fnPath}
     var _fnWrapper = {}

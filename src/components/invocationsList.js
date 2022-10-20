@@ -6,7 +6,7 @@ return(
 <DataTable value = {props.invocationRecords} size="small">
     <Column field = "fnPath" header="Function Path"></Column>
     <Column field = "callArgs" header="Call Arguments"></Column>
-    <Column field = "Timestamp" header="Timestamp"></Column>
+    <Column field = "timestamp" header="Timestamp"></Column>
 </DataTable>
 )
 }

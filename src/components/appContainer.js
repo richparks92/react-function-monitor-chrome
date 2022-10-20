@@ -1,8 +1,8 @@
 import './appContainer.css'
+import React, { useState } from "react";
 import ToggleWrapperButton from './button.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
-import React, { useState } from "react";
-import { initializeHandlers } from '../scripts/helpers.js';
+import  initializeHandlers from '../scripts/initializeHandlers.js';
 import InvocationsList from './invocationsList';
 
 /*global chrome*/
@@ -21,7 +21,8 @@ export default function AppContainer(props) {
   const setPending = () => {
     if (client.enableWrapOnPageLoad && client.isFnWrapped) setButtonStatus('pending')
   }
-  initializeHandlers(client, updateStateFromClientDetails, setPending, setInvocationRecords)
+  //Initialize handlers, passing client and state update functions as argument
+  initializeHandlers(client, updateStateFromClientDetails, setPending)
 
   const toggleClickHandler = async () => {
     await client.toggleFunctionWrapper();
