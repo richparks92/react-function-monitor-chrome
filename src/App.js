@@ -13,12 +13,10 @@ function App() {
   //Try passing client as a prop to a subcomponent
   const devToolsClient = new DevToolsDebugClient("window.__attentive.trigger")
 
-
   return (
     <div className="App"> 
       <Panel header = "Funtion Monitor Extension">
       <AppContainer client = {devToolsClient}></AppContainer>
-
       </Panel>
       
 

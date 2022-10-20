@@ -16,6 +16,7 @@ export const extractArguments = (fnString) => {
 export const initializeHandlers = function(client, updateStateFromClientDetails, setPending, setInvocations){
 const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
+      if(message.tabId != chrome.devtools.inspectedWindow.tabId) return true;
       if (message.type == 'WINDOW_LOADED' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
         if (client.enableWrapOnPageLoad == true) {
           //Should add setting for wait time
@@ -39,6 +40,7 @@ const onMessageHandler = function (message, sender, sendResponse) {
         console.log('Before Navigate')
         client.clearInvocationRecords()
         client.contentScriptInjected= false
+        updateStateFromClientDetails()
         setPending()
         sendResponse()
       }
