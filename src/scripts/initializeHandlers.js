@@ -15,8 +15,8 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
 
           } else if (message.type == 'FUNCTION_CALL_DETAILS') {
     
-            console.log('FUNCTION CALL DETAILS:')
-            console.log(message.data)
+            console.log('FUNCTION CALLED')
+
             let _data
             _data = message.data
             _data.callArgs = _data.callArgs.join(', ')
