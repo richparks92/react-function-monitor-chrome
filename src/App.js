@@ -7,8 +7,6 @@ import { Panel } from 'primereact/panel'
 import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
 import "primereact/resources/primereact.min.css";                  //core css
 import "primeicons/primeicons.css";                                //icons
-import {DataTable} from 'primereact/datatable'
-import { Column } from 'primereact/column';
 
 function App() {
   //Try passing client as a prop to a subcomponent

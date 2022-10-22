@@ -1,9 +1,11 @@
 import './appContainer.css'
 import React, { useState } from "react";
+import  initializeHandlers from '../scripts/initializeHandlers.js';
+
 import ToggleWrapperButton from './button.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
-import  initializeHandlers from '../scripts/initializeHandlers.js';
 import InvocationsList from './invocationsList';
+import FunctionForm from './functionForm';
 
 /*global chrome*/
 
@@ -33,6 +35,6 @@ export default function AppContainer(props) {
       <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
       <ToggleWrapperButton clickHandler={toggleClickHandler} buttonStatus={buttonStatus}></ToggleWrapperButton>
       <InvocationsList invocationRecords={invocationRecords}></InvocationsList>
-
+    <FunctionForm></FunctionForm>
     </div>)
 }
