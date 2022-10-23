@@ -1,6 +1,6 @@
 /*global chrome*/
-import {extractArguments } from './helpers.js'
-import {getSplitWrapperExpressionStrings, getSplitUnwrapperExpressionStrings, evaluateExpressionAsync} from './debuggerMethods.js'
+import { extractArguments } from './helpers.js'
+import { getSplitWrapperExpressionStrings, getSplitUnwrapperExpressionStrings, evaluateExpressionAsync } from './debuggerMethods.js'
 
 export default class DevToolsDebugClient {
   constructor(fnPath) {
@@ -8,7 +8,6 @@ export default class DevToolsDebugClient {
     this.isFnWrapped = false
     this.setFnDetails(fnPath)
     this.enableWrapOnPageLoad = false
-
   }
 
   setFnDetails(fnPath) {
@@ -153,6 +152,4 @@ export default class DevToolsDebugClient {
     }
     return isSuccess
   }
-
 }
-

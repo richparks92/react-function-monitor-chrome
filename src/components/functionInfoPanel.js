@@ -1,5 +1,5 @@
 import React from 'react'
-import './functionInfoPanel.css'
+import './css/functionInfoPanel.css'
 import {Card} from 'primereact/card'
 import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
 import "primereact/resources/primereact.min.css";                  //core css

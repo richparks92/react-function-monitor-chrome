@@ -2,31 +2,31 @@ import React, { useState } from 'react'
 import { AutoComplete } from 'primereact'
 
 
-export default function FunctionForm(props){
-    const [filteredSuggestions, setfilteredSuggestions] = useState()
-    const [selectedSuggestion, setSelectedSuggestion] = useState()
-    const suggestions = ['aaaabcd','aaaabcde', 'aaaac', 'aaaae']
+export default function FunctionForm({windowObject, client}){
+    const [fns, setFns] = useState(['aaaabcd','aaaabcde', 'aaaac', 'aaaae'])
+    const [filteredFns, setfilteredFns] = useState([])
+    const [selectedFn, setSelectedFn] = useState([])
 
-    const searchSuggestions= (event)=>{
+    const searchFns= (event)=>{
         setTimeout(()=>{
-            let _filteredSuggestions
+            let _filteredFns
             if (!event.query.trim().length) {
-                _filteredSuggestions = [...suggestions];
+                _filteredFns = [...fns];
 
             }
             else {
-                _filteredSuggestions = suggestions.filter((suggestion) => {
-                    return suggestion.toLowerCase().startsWith(event.query.toLowerCase());
+                _filteredFns = fns.filter((fn) => {
+                    return fn.toLowerCase().startsWith(event.query.toLowerCase());
                 });
             }
-            setfilteredSuggestions(_filteredSuggestions)
+            setfilteredFns(_filteredFns)
         }, 250)
     }
     return(
-        <div>    <AutoComplete value={selectedSuggestion}
-        suggestions={suggestions} 
-        completeMethod={searchSuggestions} dropdown="true" onChange={(e) => setSelectedSuggestion(e.value)} />
-        <span>{selectedSuggestion}</span></div>
+        <div>    <AutoComplete value={selectedFn}
+        fns={fns} 
+        completeMethod={searchFns} dropdown="true" onChange={(e) => setSelectedFn(e.value)} />
+        <span>{selectedFn}</span></div>
 
 
         )
