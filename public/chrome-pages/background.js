@@ -23,10 +23,11 @@ const onBeforeNavigateHandler= async function(details){
 const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
         if (message.type == 'INJECT_SCRIPT_TO_TAB') {
-
-            if (!message.tabId) sendResponse(false)
-            const injectSuccess = await injectContentScript(message.tabId)
+            console.log('Received inject message.')
+            if (!message.tabId|| !message.scriptFiles || message.scriptFiles.length < 1) sendResponse(false)
+            const injectSuccess = await injectContentScript(message.tabId, message.scriptFiles, message.executeInMainWorld)
             sendResponse(injectSuccess)
+            sendResponse
         } else if (message.type == 'LOG') {
             console.log('LOG: ' + message.logSummary)
             if (message.logDetail) console.log(message.logDetail)

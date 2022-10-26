@@ -1,7 +1,7 @@
 /*global chrome*/
 import {wait} from './helpers.js'
 
-export default function initializeHandlers(client, updateStateFromClientDetails, setPending){
+export default function initializeHandlers(client, updateStateFromClientDetails, setPending, setFnArray){
     const onMessageHandler = function (message, sender, sendResponse) {
         (async () => {
           if (message.type == 'WINDOW_LOADED' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
@@ -11,7 +11,8 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
               await client.wrapFunction(client.fnPath)
               updateStateFromClientDetails()
             }
-            sendResponse(client.getState())
+              
+            sendResponse({clientState: client.getState(), scriptsToInject:[''] })
 
           } else if (message.type == 'FUNCTION_CALL_DETAILS') {
     
@@ -31,6 +32,11 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
             updateStateFromClientDetails()
             setPending()
             sendResponse()
+            
+          } else if (message.type=='FN_ARRAY_RESULT' && sender.tab.id == chrome.devtools.inspectedWindow.tabId){
+            console.log('FN_ARRAY')
+            console.log(message.data)
+            setFnArray(message.data)
           }
         })()
         return true

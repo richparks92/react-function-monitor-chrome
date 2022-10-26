@@ -1,34 +1,39 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AutoComplete } from 'primereact'
 
-
-export default function FunctionForm({windowObject, client}){
-    const [fns, setFns] = useState(['aaaabcd','aaaabcde', 'aaaac', 'aaaae'])
+export default function FunctionForm({ client, fnArray }) {
+    fnArray = fnArray || []
+    //const [fns, setFns] = useState()
     const [filteredFns, setfilteredFns] = useState([])
-    const [selectedFn, setSelectedFn] = useState([])
+    const [selectedFn, setSelectedFn] = useState()
 
-    const searchFns= (event)=>{
-        setTimeout(()=>{
-            let _filteredFns
-            if (!event.query.trim().length) {
-                _filteredFns = [...fns];
+    console.log('Loading function form. FN Array:')
+    console.log(fnArray)
 
-            }
-            else {
-                _filteredFns = fns.filter((fn) => {
-                    return fn.toLowerCase().startsWith(event.query.toLowerCase());
-                });
+    const searchFns = (event) => {
+        setTimeout(() => {
+            let _filteredFns = []
+            if (fnArray.length > 0) {
+                if (!event.query.trim().length) {
+                    _filteredFns = [...fnArray];
+
+                }
+                else {
+                    _filteredFns = fnArray.filter((fn) => {
+                        return fn.startsWith(event.query);
+                    });
+                }
             }
             setfilteredFns(_filteredFns)
         }, 250)
     }
-    return(
+    return (
         <div>    <AutoComplete value={selectedFn}
-        fns={fns} 
-        completeMethod={searchFns} dropdown="true" onChange={(e) => setSelectedFn(e.value)} />
-        <span>{selectedFn}</span></div>
+            suggestions={filteredFns}
+            completeMethod={searchFns} dropdown="true" onChange={(e) => setSelectedFn(e.value)} />
+            <div><span>{selectedFn}</span></div></div>
 
 
-        )
-        
+    )
+
 }
