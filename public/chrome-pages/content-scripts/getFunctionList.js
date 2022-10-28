@@ -1,3 +1,4 @@
+(()=>{
 console.log('getFunctionList')
 function getWindowFunctionsList(_parentObj, _parentPathStr) {
   let fnArray = [];
@@ -71,6 +72,7 @@ function getWindowFunctionsList(_parentObj, _parentPathStr) {
 }
 
 let fnArray = getWindowFunctionsList(window, 'window')
-window.postMessage({type: 'FN_ARRAY_READY_EVENT', data: fnArray})
-fnArray = null
-getWindowFunctionsList = null
+window.postMessage({type: 'FN_ARRAY_READY_EVENT', fnArray: fnArray})
+// fnArray = null
+// getWindowFunctionsList = null
+})()

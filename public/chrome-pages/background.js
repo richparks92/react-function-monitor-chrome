@@ -1,21 +1,26 @@
-import injectContentScript  from "./content-scripts/injectContentScript.js"
+import injectContentScript from "./content-scripts/injectContentScript.js"
 console.log('Background page starting.')
 
 const onCompletedHandler = async function (details) {
     if (details.parentFrameId == -1 && details.tabId) {
-        try{
+        try {
             //Should probably add onConnect listener to set a variable for checking
             const res = await chrome.runtime.sendMessage({ type: 'WINDOW_LOADED', tabId: details.tabId })
-        } catch(e){
+            if (!res.domListenerInjected) {
+                const injectedListenerScript = await injectContentScript(details.tabId, ['/chrome-pages/content-scripts/addDomListeners.js'], true)
+                const injectedGetFunctionScript = await injectContentScript(details.tabId, ['/chrome-pages/content-scripts/getFunctionList.js'])
+ 
+            }
+        } catch (e) {
             console.log(e)
         }
     }
 }
-const onBeforeNavigateHandler= async function(details){
+const onBeforeNavigateHandler = async function (details) {
     if (details.parentFrameId == -1 && details.tabId) {
-        try{
+        try {
             const res = await chrome.runtime.sendMessage({ type: 'BEFORE_NAVIGATE', tabId: details.tabId })
-        } catch(e){
+        } catch (e) {
             console.log(e)
         }
     }
@@ -24,7 +29,7 @@ const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
         if (message.type == 'INJECT_SCRIPT_TO_TAB') {
             console.log('Received inject message.')
-            if (!message.tabId|| !message.scriptFiles || message.scriptFiles.length < 1) sendResponse(false)
+            if (!message.tabId || !message.scriptFiles || message.scriptFiles.length < 1) sendResponse(false)
             const injectSuccess = await injectContentScript(message.tabId, message.scriptFiles, message.executeInMainWorld)
             sendResponse(injectSuccess)
             sendResponse

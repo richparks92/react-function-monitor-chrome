@@ -1,9 +1,10 @@
 /*global chrome*/
 import {wait} from './helpers.js'
-
+import sendInjectMessages from './sendInjectMessages.js'
 export default function initializeHandlers(client, updateStateFromClientDetails, setPending, setFnArray){
     const onMessageHandler = function (message, sender, sendResponse) {
         (async () => {
+          
           if (message.type == 'WINDOW_LOADED' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
             if (client.enableWrapOnPageLoad == true) {
               //Should add setting for wait time
@@ -11,9 +12,8 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
               await client.wrapFunction(client.fnPath)
               updateStateFromClientDetails()
             }
-              
-            sendResponse({clientState: client.getState(), scriptsToInject:[''] })
-
+            sendResponse({clientState: client.getState(), domListenerInjected: client.domListenerInjected })
+            sendInjectMessages();
           } else if (message.type == 'FUNCTION_CALL_DETAILS') {
     
             console.log('FUNCTION CALLED')
@@ -28,23 +28,22 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
           } else if (message.type == 'BEFORE_NAVIGATE' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
             console.log('Before Navigate')
             client.clearInvocationRecords()
-            client.contentScriptInjected= false
+            client.domListenerInjected= false
             updateStateFromClientDetails()
             setPending()
             sendResponse()
             
           } else if (message.type=='FN_ARRAY_RESULT' && sender.tab.id == chrome.devtools.inspectedWindow.tabId){
-            console.log('FN_ARRAY')
-            console.log(message.data)
-            setFnArray(message.data)
+            console.log('FN_ARRAY message received.')
+            setFnArray(message.fnArray)
           }
         })()
         return true
       }
     
-      if (!client.initialized) {
+      if (!client.handlersInitialized) {
         chrome.runtime.onMessage.addListener(onMessageHandler)
-        client.initialized = true
+        client.handlersInitialized = true
         console.log('Adding window loaded listener.')
       }
     }

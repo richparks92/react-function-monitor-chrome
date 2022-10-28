@@ -5,6 +5,6 @@ window.addEventListener("message", (event) => {
       chrome.runtime.sendMessage({type:'FUNCTION_CALL_DETAILS', data: event.data})
 
     } else if (event.data.type== 'FN_ARRAY_READY_EVENT'){
-      chrome.runtime.sendMessage({type:'FN_ARRAY_RESULT', data: event.data.data})
+      chrome.runtime.sendMessage({type:'FN_ARRAY_RESULT', fnArray: event.data.fnArray})
     }
   }, false)

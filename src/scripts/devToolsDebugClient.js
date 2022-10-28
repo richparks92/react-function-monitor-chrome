@@ -111,22 +111,8 @@ export default class DevToolsDebugClient {
     //Log end 
     await evaluateExpressionAsync(wrappingExpressions.logEnd)
 
-    //Inject script if not injected
-    // if (!this.contentScriptInjected) {
-    //   try {
-    //     injectSuccess = await chrome.runtime.sendMessage({ 
-    //       type: 'INJECT_SCRIPT_TO_TAB', 
-    //       tabId: chrome.devtools.inspectedWindow.tabId, 
-    //       scriptFiles: ['/chrome-pages/content-scripts/addFunctionCallListener.js'] })
-    //     if (injectSuccess) this.contentScriptInjected = true
-    //   } catch (e) {
-    //     console.log('Error sending message to inject script.')
-    //     console.log(e)
-    //     return false
-    //   }
-    // }
-    this.contentScriptInjected = true
-    if (evaluateSuccess && this.contentScriptInjected) return true
+    this.domListenerInjected = true
+    if (evaluateSuccess && this.domListenerInjected) return true
 
     return evaluateSuccess && injectSuccess
   }
