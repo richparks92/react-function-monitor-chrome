@@ -27,7 +27,6 @@ function getWindowFunctionsList(_parentObj, _parentPathStr) {
     const filteredKeys = parentKeys.filter((key)=>{
       return !rgx.test(key)
     })
-    if(depth==1) console.log(`Filtered keys: ${filteredKeys.length}`)
     //for (const key in parentObj)
     for (const key of filteredKeys) {
       

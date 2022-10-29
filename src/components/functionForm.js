@@ -7,16 +7,12 @@ export default function FunctionForm({ client, fnArray }) {
     const [filteredFns, setfilteredFns] = useState([])
     const [selectedFn, setSelectedFn] = useState()
 
-    console.log('Loading function form. FN Array:')
-    console.log(fnArray)
-
     const searchFns = (event) => {
         setTimeout(() => {
             let _filteredFns = []
             if (fnArray.length > 0) {
                 if (!event.query.trim().length) {
                     _filteredFns = [...fnArray];
-
                 }
                 else {
                     _filteredFns = fnArray.filter((fn) => {
@@ -30,7 +26,7 @@ export default function FunctionForm({ client, fnArray }) {
     return (
         <div>    <AutoComplete value={selectedFn}
             suggestions={filteredFns}
-            completeMethod={searchFns} dropdown="true" onChange={(e) => setSelectedFn(e.value)} />
+            completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)} />
             <div><span>{selectedFn}</span></div></div>
 
 
