@@ -9,7 +9,7 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
         if (client.enableWrapOnPageLoad == true) {
           //Should add setting for wait time
           sendInjectMessages(client);
-          await wait(1000)
+          await wait(2000)
           
           await client.wrapFunction(client.fnPath)
           updateStateFromClientDetails()
