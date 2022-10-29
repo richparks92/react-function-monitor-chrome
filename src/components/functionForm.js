@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { AutoComplete } from 'primereact'
-
+import {Button} from 'primereact/button'
+import './css/functionForm.css'
 export default function FunctionForm({ client, fnArray }) {
     fnArray = fnArray || []
     //const [fns, setFns] = useState()
@@ -16,7 +17,7 @@ export default function FunctionForm({ client, fnArray }) {
                 }
                 else {
                     _filteredFns = fnArray.filter((fn) => {
-                        return fn.startsWith(event.query);
+                        return fn.startsWith(event.query)|| fn.startsWith(`window.${event.query}`);
                     });
                 }
             }
@@ -24,10 +25,19 @@ export default function FunctionForm({ client, fnArray }) {
         }, 250)
     }
     return (
-        <div>    <AutoComplete value={selectedFn}
+        <div>  
+            <h6>Select Function</h6>  
+            <div className = "functionForm">
+            <AutoComplete value={selectedFn}
             suggestions={filteredFns}
             completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)} />
-            <div><span>{selectedFn}</span></div></div>
+
+            <Button icon="pi pi-check" iconPos="right" onClick={(e)=>{
+                if(selectedFn.length>0) client.setFnDetails(selectedFn)
+                console.log('Function submission event.')
+            }}/>
+            </div>
+            </div>
 
 
     )

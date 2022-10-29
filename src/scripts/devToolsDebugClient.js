@@ -6,8 +6,9 @@ export default class DevToolsDebugClient {
   constructor(fnPath) {
     this.fnDetails = {}
     this.isFnWrapped = false
-    this.setFnDetails(fnPath)
+    if(fnPath) this.setFnDetails(fnPath)
     this.enableWrapOnPageLoad = false
+    this.updateStateFromClientDetails= ()=>{}
   }
 
   setFnDetails(fnPath) {
@@ -17,6 +18,7 @@ export default class DevToolsDebugClient {
       let fnPathArray = fnPath.split('.')
       this.fnDetails.name = fnPathArray[fnPathArray.length - 1]
       if (fnPathArray.length > 1) this.fnDetails.parentPath = fnPathArray.slice(0, -1).join('.')
+      this.updateStateFromClientDetails()
     }
   }
 
@@ -25,6 +27,9 @@ export default class DevToolsDebugClient {
     if (this.isFnWrapped) await this.unwrapFunction(this.fnDetails.path)
     this.fnDetails = {}
     this.clearInvocationRecords()
+  }
+  setUpdaterFunction(updateStateFromClientDetails){
+    this.updateStateFromClientDetails = updateStateFromClientDetails
   }
 
   addInvocationRecord(invocationRecord) {
@@ -62,6 +67,7 @@ export default class DevToolsDebugClient {
 
   //Wrap function and if successful update isFnWrapped
   async wrapFunction() {
+    if(!this.fnDetails || !this.fnDetails.path) return false
     const fnPath = this.fnDetails.path
     this.enableWrapOnPageLoad = true
     let evaluateSuccess = false

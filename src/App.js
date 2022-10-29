@@ -15,7 +15,7 @@ import "primeicons/primeicons.css";                                //icons
 
 function App() {
   //Try passing client as a prop to a subcomponent
-  const devToolsClient = new DevToolsDebugClient("window.__attentive.trigger")
+  const devToolsClient = new DevToolsDebugClient()
 
   useEffect(() => {
     //Get window variable 
