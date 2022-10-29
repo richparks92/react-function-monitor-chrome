@@ -1,17 +1,32 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import './css/functionInfoPanel.css'
-import {Card} from 'primereact/card'
+import { Card } from 'primereact/card'
 import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
 import "primereact/resources/primereact.min.css";                  //core css
 import "primeicons/primeicons.css";                                //icons
 
-export default function FunctionInfoPanel({functionName, functionParentPath}){
-    return(    
+export default function FunctionInfoPanel({ functionName, functionParentPath }) {
+  functionName = functionName || ''
+  functionParentPath = functionParentPath || ''
+  return (
     <div id="functionInfoContainer">
-    <div id="functionNamePanel" className="functionInfoPanel">
-      <Card title ="Function Name" width = "500px"><span style= {{color: "gray"}}>{functionParentPath}</span>.<span style = {{color:"orange"}}>{functionName}</span></Card>
+      <div id="functionNamePanel" className="functionInfoPanel">
+        <Card title="Function Name" width="500px">
+          {functionName && functionName.length > 0 && 
+            <Fragment>
+              <span style={{ color: "gray" }}>{functionParentPath}</span>
+              <span style={{ color: "orange", fontSize: "20px", fontWeight: "bold" }}> .{functionName}</span>
+            </Fragment>
+          }
+
+          {!functionName && !functionName.length > 0 &&
+            <Fragment>
+              <span style={{ color: "gray" }}><em>No function currently loaded.</em></span>
+            </Fragment>}
+        </Card>
+
+      </div>
     </div>
-  </div>
 
   )
 }

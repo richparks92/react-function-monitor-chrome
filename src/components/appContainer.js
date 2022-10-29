@@ -10,7 +10,7 @@ import FunctionForm from './functionForm';
 
 export default function AppContainer({client}) {
   const [buttonStatus, setButtonStatus] = useState('inactive')
-  const [functionInfo, setFunctionInfo] = useState({ fnName: 'TestFn', fnParentPath: 'window.TestObj' })
+  const [functionInfo, setFunctionInfo] = useState({ fnName: '', fnParentPath: '' })
   const [invocationRecords, setInvocationRecords] = useState([])
   const [fnArray, setFnArray] = useState([])
 

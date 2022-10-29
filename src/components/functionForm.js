@@ -28,7 +28,7 @@ export default function FunctionForm({ client, fnArray }) {
         <div>  
             <h6>Select Function</h6>  
             <div className = "functionForm">
-            <AutoComplete value={selectedFn}
+            <AutoComplete size="50" value={selectedFn}
             suggestions={filteredFns}
             completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)} />
 
