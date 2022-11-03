@@ -11,7 +11,7 @@ export default function FunctionInfoPanel({ functionName, functionParentPath }) 
   return (
     <div id="functionInfoContainer">
       <div id="functionNamePanel" className="functionInfoPanel">
-        <Card title="Function Name" width="500px">
+        <Card title={functionName.length>0 ? "Selected Function":""} width="500px">
           {functionName && functionName.length > 0 && 
             <Fragment>
               <span style={{ color: "gray" }}>{functionParentPath}</span>
@@ -21,7 +21,7 @@ export default function FunctionInfoPanel({ functionName, functionParentPath }) 
 
           {!functionName && !functionName.length > 0 &&
             <Fragment>
-              <span style={{ color: "gray" }}><em>No function currently loaded.</em></span>
+              <span style={{ color: "gray" }}><em>No function currently selected.</em></span>
             </Fragment>}
         </Card>
 
