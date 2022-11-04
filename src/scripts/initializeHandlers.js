@@ -10,12 +10,12 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
           //Should add setting for wait time
           sendInjectMessages(client);
           await wait(2000)
-          
+
           await client.wrapFunction(client.fnPath)
           updateStateFromClientDetails()
         }
         sendResponse({ clientState: client.getState(), domListenerInjected: client.domListenerInjected })
-        
+
 
       } else if (message.type === 'BEFORE_NAVIGATE' && message.tabId == chrome.devtools.inspectedWindow.tabId) {
         console.log('Before Navigate')

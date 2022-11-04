@@ -1,5 +1,4 @@
 (()=>{
-console.log('getFunctionList')
 function getWindowFunctionsList(_parentObj, _parentPathStr) {
   let fnArray = [];
   const rgx = /window\.(?:[0-9]+)|\.(?:(?:(?:document)|(?:history)|(?:opener)|(?:frameElement)|(?:ServiceWorkerContainer)|(?:navigator)|(?:location)))/;

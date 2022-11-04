@@ -27,6 +27,7 @@ export default function AppContainer({client}) {
   //Initialize handlers, passing client and state update functions as argument
   initializeHandlers(client, updateStateFromClientDetails, setPending, setFnArray)
   client.setUpdaterFunction(updateStateFromClientDetails)
+
   const toggleClickHandler = async () => {
     await client.toggleFunctionWrapper();
     updateStateFromClientDetails()
