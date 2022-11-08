@@ -9,11 +9,10 @@ export default function initializeHandlers(client, {updateStateFromClientDetails
         if (client.enableWrapOnPageLoad == true) {
           //Should add setting for wait time
           sendInjectMessages(client);
-          await wait(2000)
-
-          await client.wrapFunction()
-          //updateStateFromClientDetails()
-          client.setters.updateStateFromClientDetails()
+          await wait(2000);
+          await client.wrapFunction();
+          updateStateFromClientDetails();
+          setButtonPending(false)
         }
         sendResponse({ clientState: client.getState(), domListenerInjected: client.domListenerInjected })
 
@@ -23,8 +22,7 @@ export default function initializeHandlers(client, {updateStateFromClientDetails
         client.clearInvocationRecords()
         client.domListenerInjected = false
         //updateStateFromClientDetails()
-        client.setters.updateStateFromClientDetails()
-        setButtonPending()
+        if(client.isFnWrapped && client.enableWrapOnPageLoad) setButtonPending(true)
         sendResponse()
 
       } else if (message.type == 'FUNCTION_CALL_DETAILS') {
@@ -35,8 +33,8 @@ export default function initializeHandlers(client, {updateStateFromClientDetails
         _data = message.data
         _data.callArgs = _data.callArgs.join(', ')
         client.addInvocationRecord(_data)
-        client.setters.updateStateFromClientDetails()
-        //updateStateFromClientDetails()
+        updateStateFromClientDetails()
+
         sendResponse()
 
       } else if (message.type === 'FN_ARRAY_RESULT' && sender.tab.id == chrome.devtools.inspectedWindow.tabId) {
