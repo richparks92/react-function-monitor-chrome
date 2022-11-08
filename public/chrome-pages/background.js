@@ -1,10 +1,10 @@
 import injectContentScript from "./content-scripts/injectContentScript.js"
 console.log('Background page starting.')
 
+//Will fire once web pages fully load
 const onCompletedHandler = async function (details) {
     if (details.parentFrameId == -1 && details.tabId) {
         try {
-            //Should probably add onConnect listener to set a variable for checking
             const res = await chrome.runtime.sendMessage({ type: 'WINDOW_LOADED', tabId: details.tabId })
             if (!res.domListenerInjected) {
                 const injectedListenerScript = await injectContentScript(details.tabId, ['/chrome-pages/content-scripts/addDomListeners.js'], true)

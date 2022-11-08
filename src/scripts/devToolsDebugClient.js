@@ -5,10 +5,11 @@ import { getSplitWrapperExpressionStrings, getSplitUnwrapperExpressionStrings, e
 export default class DevToolsDebugClient {
   constructor(fnPath) {
     this.fnDetails = {}
+    this.setters = {}
     this.isFnWrapped = false
-    if(fnPath) this.setFnDetails(fnPath)
+    if (fnPath) this.setFnDetails(fnPath)
     this.enableWrapOnPageLoad = false
-    this.updateStateFromClientDetails= ()=>{}
+    this.setters.updateStateFromClientDetails = () => { console.log('No setters.updateState exists.')}
   }
 
   setFnDetails(fnPath) {
@@ -18,7 +19,7 @@ export default class DevToolsDebugClient {
       let fnPathArray = fnPath.split('.')
       this.fnDetails.name = fnPathArray[fnPathArray.length - 1]
       if (fnPathArray.length > 1) this.fnDetails.parentPath = fnPathArray.slice(0, -1).join('.')
-      this.updateStateFromClientDetails()
+      this.setters.updateStateFromClientDetails()
     }
   }
 
@@ -28,8 +29,11 @@ export default class DevToolsDebugClient {
     this.fnDetails = {}
     this.clearInvocationRecords()
   }
-  setUpdaterFunction(updateStateFromClientDetails){
-    this.updateStateFromClientDetails = updateStateFromClientDetails
+
+  addSetterFunctions(setters) {
+    for (const key in setters) {
+      this.setters[key] = setters[key]
+    }
   }
 
   addInvocationRecord(invocationRecord) {
@@ -48,30 +52,17 @@ export default class DevToolsDebugClient {
     }
   }
   async toggleFunctionWrapper() {
-    let toggleSuccess
-
     //If toggle is initially OFF, evaluate if it should be turned on
-    if (!this.isFnWrapped) {
-
-      toggleSuccess = await this.wrapFunction(this.fnPath)
-
-      if (toggleSuccess) this.isFnWrapped = true
-
-      //If toggle is initially ON, unwrap
-    } else {
-      toggleSuccess = await this.unwrapFunction(this.fnPath)
-      this.isFnWrapped = false
-    }
+    this.isFnWrapped ? await this.unwrapFunction() : this.wrapFunction()
     return this.isFnWrapped
   }
 
   //Wrap function and if successful update isFnWrapped
   async wrapFunction() {
-    if(!this.fnDetails || !this.fnDetails.path) return false
+    if (!this.fnDetails || !this.fnDetails.path) return false
     const fnPath = this.fnDetails.path
     this.enableWrapOnPageLoad = true
     let evaluateSuccess = false
-    let injectSuccess = false
 
     const wrappingExpressions = getSplitWrapperExpressionStrings(fnPath)
     //Check if function exists
@@ -117,10 +108,8 @@ export default class DevToolsDebugClient {
     //Log end 
     await evaluateExpressionAsync(wrappingExpressions.logEnd)
 
-    this.domListenerInjected = true
-    if (evaluateSuccess && this.domListenerInjected) return true
-
-    return evaluateSuccess && injectSuccess
+    if (evaluateSuccess && this.domListenerInjected) this.isFnWrapped = true
+    return evaluateSuccess && this.domListenerInjected
   }
 
   async unwrapFunction() {
@@ -145,6 +134,8 @@ export default class DevToolsDebugClient {
       console.log(e)
       isSuccess = false
     }
+
+    this.isFnWrapped = false
     return isSuccess
   }
 }

@@ -8,36 +8,43 @@ import FunctionForm from './functionForm';
 
 /*global chrome*/
 
-export default function AppContainer({client}) {
-  const [buttonStatus, setButtonStatus] = useState('inactive')
+export default function AppContainer({ client }) {
+  const [buttonActive, setButtonActive] = useState(false)
+  const [buttonPending, setButtonPending] = useState(false)
   const [functionInfo, setFunctionInfo] = useState({ fnName: '', fnParentPath: '' })
   const [invocationRecords, setInvocationRecords] = useState([])
-  const [fnArray, setFnArray] = useState([])
+  const [fnSuggestionArray, setFnSuggestionArray] = useState([])
 
   //These methods are passed to the event handlers
   const updateStateFromClientDetails = () => {
     setFunctionInfo({ fnName: client.fnDetails.name, fnParentPath: client.fnDetails.parentPath })
-    setButtonStatus(client.isFnWrapped ? 'active' : 'inactive')
+    setButtonActive(client.isFnWrapped)
     setInvocationRecords(client.invocationRecords)
+    console.log(`Updating UI from client. Setting button to: ${client.isFnWrapped}`)
   }
+
   const setPending = () => {
-    if (client.enableWrapOnPageLoad && client.isFnWrapped) setButtonStatus('pending')
+    if (client.enableWrapOnPageLoad && client.isFnWrapped) setButtonPending(true)
   }
 
   //Initialize handlers, passing client and state update functions as argument
-  initializeHandlers(client, updateStateFromClientDetails, setPending, setFnArray)
-  client.setUpdaterFunction(updateStateFromClientDetails)
-
-  const toggleClickHandler = async () => {
-    await client.toggleFunctionWrapper();
-    updateStateFromClientDetails()
+  const setterFunctions = {
+    updateStateFromClientDetails: updateStateFromClientDetails,
+    setButtonActive: setButtonActive,
+    setButtonPending: setButtonPending,
+    setInvocationRecords: setInvocationRecords,
+    setFunctionInfo: setFunctionInfo,
+    setFnSuggestionArray: setFnSuggestionArray
   }
+
+  initializeHandlers(client, setterFunctions)
+  client.addSetterFunctions(setterFunctions)
+
   return (
     <div className="App-body-container">
-      <FunctionForm client = {client} fnArray={fnArray}></FunctionForm>
-      <ToggleWrapperButton clickHandler={toggleClickHandler} buttonStatus={buttonStatus}></ToggleWrapperButton>
+      <FunctionForm client={client} fnSuggestionArray={fnSuggestionArray} buttonActive={buttonActive} buttonPending={buttonPending}></FunctionForm>
       <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
       <InvocationsList invocationRecords={invocationRecords}></InvocationsList>
-      
+
     </div>)
 }

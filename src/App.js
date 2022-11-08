@@ -15,18 +15,18 @@ import "primeicons/primeicons.css";                                //icons
 
 function App() {
   //Try passing client as a prop to a subcomponent
-  const devToolsClient = new DevToolsDebugClient()
+  const client = new DevToolsDebugClient()
 
   useEffect(() => {
     //Get window variable 
-    sendInjectMessages(devToolsClient)
+    sendInjectMessages(client)
 
   });
 
   return (
     <div className="App">
       <Panel header="Funtion Monitor Extension">
-        <AppContainer client={devToolsClient} ></AppContainer>
+        <AppContainer client={client} ></AppContainer>
       </Panel>
     </div>
 

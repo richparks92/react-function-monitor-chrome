@@ -1,7 +1,7 @@
 /*global chrome*/
 import { wait } from './helpers.js'
 import sendInjectMessages from './sendInjectMessages.js'
-export default function initializeHandlers(client, updateStateFromClientDetails, setPending, setFnArray) {
+export default function initializeHandlers(client, {updateStateFromClientDetails, setButtonPending, setFnSuggestionArray}) {
   const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
 
@@ -11,8 +11,9 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
           sendInjectMessages(client);
           await wait(2000)
 
-          await client.wrapFunction(client.fnPath)
-          updateStateFromClientDetails()
+          await client.wrapFunction()
+          //updateStateFromClientDetails()
+          client.setters.updateStateFromClientDetails()
         }
         sendResponse({ clientState: client.getState(), domListenerInjected: client.domListenerInjected })
 
@@ -21,8 +22,9 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
         console.log('Before Navigate')
         client.clearInvocationRecords()
         client.domListenerInjected = false
-        updateStateFromClientDetails()
-        setPending()
+        //updateStateFromClientDetails()
+        client.setters.updateStateFromClientDetails()
+        setButtonPending()
         sendResponse()
 
       } else if (message.type == 'FUNCTION_CALL_DETAILS') {
@@ -33,12 +35,13 @@ export default function initializeHandlers(client, updateStateFromClientDetails,
         _data = message.data
         _data.callArgs = _data.callArgs.join(', ')
         client.addInvocationRecord(_data)
-        updateStateFromClientDetails()
+        client.setters.updateStateFromClientDetails()
+        //updateStateFromClientDetails()
         sendResponse()
 
       } else if (message.type === 'FN_ARRAY_RESULT' && sender.tab.id == chrome.devtools.inspectedWindow.tabId) {
         console.log('FN_ARRAY message received.')
-        setFnArray(message.fnArray)
+        setFnSuggestionArray(message.fnArray)
       }
     })()
     return true

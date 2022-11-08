@@ -1,7 +1,7 @@
 /*global chrome*/
 export default function(client){
 
-  console.log(`sendInjectMessages. domListenerInjected: ${client.domListenerInjected}`)
+  console.log(`sendInjectMessages. domListenerInjected: ${client.domListenerInjected || "(doesn't exist yet)"}`)
 if (!client.domListenerInjected) {
   
   //Send messages to inject if client status is not injected.
