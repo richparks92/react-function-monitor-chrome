@@ -9,8 +9,9 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
     const [filteredSuggestions, setfilteredSuggestions] = useState([])
     const [selectedFn, setSelectedFn] = useState()
     const [buttonDisabled, setButtonDisabled] = useState(true)
+    const [inputDisabled, setInputDisabled] = useState(false)
 
-    const buttonLabel = buttonActive?  'Disable Listener' : 'Enable Listener'
+    const buttonLabel = buttonActive ? 'Disable Listener' : 'Enable Listener'
 
     const buttonClickHandler = async () => {
         //Handle if client is not wrapped
@@ -29,7 +30,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
                 await client.wrapFunction()
                 console.log('Wrapping selected function.')
             }
-            if  (!_fnPath && _selectedFn.length <1){
+            if (!_fnPath && _selectedFn.length < 1) {
                 console.log("No input function.")
             }
         } else {
@@ -38,6 +39,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
         }
 
         client.setters.updateStateFromClientDetails()
+        setInputDisabled(client.isFnWrapped)
     }
 
     const searchFns = (event) => {
@@ -56,7 +58,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
                 //If fnSuggestionArray > 0 AND query is empty
                 else {
                     _filteredSuggestions = [...fnSuggestionArray];
-                    if(!isFnWrapped) setButtonDisabled(true)
+                    if (!isFnWrapped) setButtonDisabled(true)
                 }
             }
             //If query is empty or matches currently (populated) selectedFn, set button disabled.
@@ -73,14 +75,19 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
         <div>
             <h4>Select Function</h4>
             <div className="functionForm">
-                <AutoComplete size="50" value={selectedFn} minLength="0" 
+                <AutoComplete size="50" value={selectedFn} minLength="0"
                     suggestions={filteredSuggestions}
-                    completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)} />
+                    completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)}
+                    disabled={inputDisabled}
+                    onClick={() => {
+                        //setInputDisabled(false)
+                        console.log('Clicked input.')
+                    }} />
 
-                <Button icon="pi pi-check" loadingIcon="pi pi-spin pi-spinner" loading={buttonPending} 
-                iconPos="right" 
-                onClick={(e) => {(async()=> await buttonClickHandler())()}} 
-                disabled={buttonDisabled}
+                <Button icon="pi pi-check" loadingIcon="pi pi-spin pi-spinner" loading={buttonPending}
+                    iconPos="right"
+                    onClick={(e) => { (async () => await buttonClickHandler())() }}
+                    disabled={buttonDisabled}
                     label={buttonLabel} />
             </div>
         </div>
