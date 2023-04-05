@@ -1,7 +1,7 @@
 import {DataTable} from 'primereact/datatable'
 import { Column } from 'primereact/column';
 
-export default function InvocationsList(props){
+export default function invocationsListOld(props){
     const invocationRecords = props.invocationRecords.map((invocationRecord)=> {
         invocationRecord.callArgs = JSON.stringify(invocationRecord.callArgs)
         //console.log(`InvocationList map: ${invocationRecord}`)
