@@ -6,10 +6,10 @@
     "author": "Chris Parks",
     "background": {
         "service_worker": "/chrome-pages/background.js",
-        "type":"module"
-      },
-      "devtools_page": "/chrome-pages/devtools_page.html",
-      "permissions": [
+        "type": "module"
+    },
+    "devtools_page": "/chrome-pages/devtools_page.html",
+    "permissions": [
         "activeTab",
         "scripting",
         "tabs",
@@ -17,8 +17,7 @@
         "webRequest",
         "webNavigation"
     ],
-    "host_permissions":[
+    "host_permissions": [
         "https://*/*"
     ]
-    
 }

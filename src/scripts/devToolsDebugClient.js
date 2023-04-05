@@ -8,6 +8,7 @@ export default class DevToolsDebugClient {
     this.setters = {}
     this.isFnWrapped = false
     if (fnPath) this.setFnDetails(fnPath)
+    if (!this.invocationRecords) this.invocationRecords = []
     this.enableWrapOnPageLoad = false
     this.setters.updateStateFromClientDetails = () => { console.log('No setters.updateState exists.')}
   }
@@ -88,6 +89,7 @@ export default class DevToolsDebugClient {
       console.log("Error extracting function arguments from prototype:")
       console.log(e)
     }
+    
     //Copy function to *_fnWrapper.originalFunctionCopy*
     try {
       await evaluateExpressionAsync(wrappingExpressions.copyMethod)

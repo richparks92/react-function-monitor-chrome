@@ -5,6 +5,8 @@ import ToggleWrapperButton from './button.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
 import InvocationsList from './invocationsList';
 import FunctionForm from './functionForm';
+import InvocationsList2 from './invocationsList2';
+import ArgTrees from './argTrees';
 
 /*global chrome*/
 
@@ -45,6 +47,8 @@ export default function AppContainer({ client }) {
       <FunctionForm client={client} fnSuggestionArray={fnSuggestionArray} buttonActive={buttonActive} buttonPending={buttonPending}></FunctionForm>
       <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
       <InvocationsList invocationRecords={invocationRecords}></InvocationsList>
+      <InvocationsList2 invocationRecords={invocationRecords}></InvocationsList2>
+    {/* <ArgTrees invocationRecords = {invocationRecords}></ArgTrees> */}
 
     </div>)
 }

@@ -42,10 +42,10 @@ export async function evaluateExpressionAsync(expression, validationValue, retry
 
 
 export function getSplitWrapperExpressionStrings(fnPath) {
-    let wrappingExpressions = {}
-    wrappingExpressions.functionExistsCheck = `typeof(${fnPath})==='function'`
-    wrappingExpressions.logStart = `console.log("Wrapping function [${fnPath}]")`
-    wrappingExpressions.getFnStringified = `
+  let wrappingExpressions = {}
+  wrappingExpressions.functionExistsCheck = `typeof(${fnPath})==='function'`
+  wrappingExpressions.logStart = `console.log("Wrapping function [${fnPath}]")`
+  wrappingExpressions.getFnStringified = `
     function getConstructorString(fn){
   
       let stringified = ''
@@ -62,33 +62,41 @@ export function getSplitWrapperExpressionStrings(fnPath) {
     }
     
     getConstructorString(${fnPath})`
-  
-    wrappingExpressions.copyMethod =
-      `var method = ${fnPath}
+
+  wrappingExpressions.copyMethod =
+    `var method = ${fnPath}
       var _fnWrapper = {}
       _fnWrapper.originalFunctionCopy =  method`
-  
-    wrappingExpressions.wrapFunction =
-      `${fnPath} = function(){
-        var args = [].slice.call(arguments)
-        method.apply(this, args)
-        window.postMessage({type: 'FUNCTION_CALL_EVENT', callArgs: args, timestamp: Date.now(), fnPath: '${fnPath}'})
-  
+
+  wrappingExpressions.wrapFunction =
+    `${fnPath} = function(){
+        let message = {}
+        try {
+          var args = [].slice.call(arguments)
+          var argsJSON = JSON.stringify(args)
+          method.apply(this, args)
+          message = {type: 'FUNCTION_CALL_EVENT', callArgs: argsJSON, timestamp: Date.now(), fnPath: '${fnPath}'}
+          console.log('Function called.')
+          console.log(message)
+          window.postMessage(message)
+        } catch (e) {
+          console.log('Console error wrapping function: '+ JSON.stringify(message, null, 2))
+        }
       }`
-  
-    wrappingExpressions.logEnd = `console.log("Finished wrapping [${fnPath}] function")`
-    return wrappingExpressions
-  
-  }
-  
-export  function getSplitUnwrapperExpressionStrings(fnPath) {
-    let unwrappingExpressions = {}
-    unwrappingExpressions.functionExistsCheck = `typeof(${fnPath}) === 'function'`
-    unwrappingExpressions.copyFunctionExistsCheck = `typeof(_fnWrapper.originalFunctionCopy)==='function'`
-    unwrappingExpressions.logStart = `console.log("Unwrapping [${fnPath}] function.")`
-    unwrappingExpressions.unwrapFunction = `
+
+  wrappingExpressions.logEnd = `console.log("Finished wrapping [${fnPath}] function")`
+  return wrappingExpressions
+
+}
+
+export function getSplitUnwrapperExpressionStrings(fnPath) {
+  let unwrappingExpressions = {}
+  unwrappingExpressions.functionExistsCheck = `typeof(${fnPath}) === 'function'`
+  unwrappingExpressions.copyFunctionExistsCheck = `typeof(_fnWrapper.originalFunctionCopy)==='function'`
+  unwrappingExpressions.logStart = `console.log("Unwrapping [${fnPath}] function.")`
+  unwrappingExpressions.unwrapFunction = `
       ${fnPath} = _fnWrapper.originalFunctionCopy
       _fnWrapper = null`
-    unwrappingExpressions.logEnd = `console.log("Function [${fnPath}] unwrapped.")`
-    return unwrappingExpressions
-  }
+  unwrappingExpressions.logEnd = `console.log("Function [${fnPath}] unwrapped.")`
+  return unwrappingExpressions
+}

@@ -75,7 +75,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
         <div>
             <h4>Select Function</h4>
             <div className="functionForm">
-                <AutoComplete size="50" value={selectedFn} minLength="0"
+                <AutoComplete  value={selectedFn} minLength="0" size = "40"
                     suggestions={filteredSuggestions}
                     completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)}
                     disabled={inputDisabled}

@@ -7,9 +7,11 @@ import sendInjectMessages from './scripts/sendInjectMessages';
 
 import AppContainer from './components/appContainer';
 import { Panel } from 'primereact/panel'
+
 import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
 import "primereact/resources/primereact.min.css";                  //core css
 import "primeicons/primeicons.css";                                //icons
+
 
 /*global chrome*/
 
