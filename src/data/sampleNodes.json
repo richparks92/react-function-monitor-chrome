@@ -1,0 +1,90 @@
+[
+    {
+        "key": "0",
+        "inputType": "obj",
+        "label": "Object {}",
+        "icon": "pi pi-box",
+        "children": [
+            {
+                "key": "0-0",
+                "inputType": "obj",
+                "label": "container {}",
+                "icon": "pi pi-box",
+                "children": [
+                    {
+                        "key": "0-0-0",
+                        "inputType": "num",
+                        "data": {
+                            "objKey": "b",
+                            "objVal": 1
+                        },
+                        "label": 1,
+                        "icon": "pi pi-calculator"
+                    },
+                    {
+                        "key": "0-0-1",
+                        "inputType": "num",
+                        "data": {
+                            "objKey": "c",
+                            "objVal": 2
+                        },
+                        "label": 2,
+                        "icon": "pi pi-calculator"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "key": "1",
+        "inputType": "str",
+        "label": "hi",
+        "icon": "pi pi-pencil"
+    },
+    {
+        "key": "2",
+        "inputType": "arr",
+        "label": "Array [2]",
+        "icon": "pi pi-list",
+        "children": [
+            {
+                "key": "2-0",
+                "inputType": "num",
+                "label": 3,
+                "icon": "pi pi-calculator"
+            },
+            {
+                "key": "2-1",
+                "inputType": "num",
+                "label": 4,
+                "icon": "pi pi-calculator"
+            }
+        ]
+    },
+    {
+        "key": "3",
+        "inputType": "arr",
+        "label": "Array [1]",
+        "icon": "pi pi-list",
+        "children": [
+            {
+                "key": "3-0",
+                "inputType": "obj",
+                "label": "Object {}",
+                "icon": "pi pi-box",
+                "children": [
+                    {
+                        "key": "3-0-0",
+                        "inputType": "str",
+                        "data": {
+                            "objKey": "five",
+                            "objVal": "six"
+                        },
+                        "label": "six",
+                        "icon": "pi pi-pencil"
+                    }
+                ]
+            }
+        ]
+    }
+]

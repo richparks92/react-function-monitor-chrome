@@ -1,5 +1,5 @@
 /*global chrome*/
-import { wait } from './helpers.js'
+import { wait } from './util/helpers.js'
 import sendInjectMessages from './sendInjectMessages.js'
 export default function initializeHandlers(client, {updateStateFromClientDetails, setButtonPending, setFnSuggestionArray}) {
   const onMessageHandler = function (message, sender, sendResponse) {

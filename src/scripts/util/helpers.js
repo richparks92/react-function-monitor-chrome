@@ -55,6 +55,7 @@ export const getTreeNodesFromInvocation = function (argsList) {
     }
     return iconLookup[inputType] || ''
   }
+  
   function extractNode(input, nodeKey, parentKey) {
 
     //Set up
@@ -113,11 +114,19 @@ export const getTreeNodesFromInvocation = function (argsList) {
   let nodes = []
   try {
     argsList.forEach((arg, index) => {
-      const node = extractNode(arg, index.toString())
+      const node = extractNode(arg, `0-${index.toString()}`)
       nodes.push(node)
     })
 
-    return nodes
+    let nodeList =   [{
+      key: '0',
+      inputType: 'arr',
+      label: `Arguments [${nodes.length}]`,
+      icon: 'pi pi-list',
+      children: nodes
+    }]
+
+      return nodeList
 
   } catch (e) {
     console.log(e)

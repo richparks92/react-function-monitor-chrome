@@ -1,4 +1,4 @@
-import { wait } from './helpers.js'
+import { wait } from './util/helpers.js'
 /*global chrome*/
 export async function evaluateExpressionAsync(expression, validationValue, retryAttempts, retryInterval) {
   const RETRY_ATTEMPTS_DEFAULT = 10

@@ -1,5 +1,5 @@
 /*global chrome*/
-import { extractArguments } from './helpers.js'
+import { extractArguments } from './util/helpers.js'
 import { getSplitWrapperExpressionStrings, getSplitUnwrapperExpressionStrings, evaluateExpressionAsync } from './debuggerMethods.js'
 
 export default class DevToolsDebugClient {

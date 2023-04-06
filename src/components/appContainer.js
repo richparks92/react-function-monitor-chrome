@@ -4,7 +4,7 @@ import initializeHandlers from '../scripts/initializeHandlers.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
 import FunctionForm from './functionForm';
 import InvocationsList from './invocationsList';
-
+import 'primeflex/primeflex.css';
 
 /*global chrome*/
 
