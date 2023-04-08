@@ -1,4 +1,6 @@
-import injectContentScript from "./content-scripts/injectContentScript.js"
+import injectContentScript from "./public-utils/injectContentScriptFile.js"
+import { getCurrentTab, injectedCopyFunction} from "./public-utils/utils.js"
+
 console.log('Background page starting.')
 
 //Will fire once web pages fully load
@@ -25,6 +27,7 @@ const onBeforeNavigateHandler = async function (details) {
         }
     }
 }
+
 const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
         if (message.type == 'INJECT_SCRIPT_TO_TAB') {
@@ -37,8 +40,19 @@ const onMessageHandler = function (message, sender, sendResponse) {
             console.log('LOG: ' + message.logSummary)
             if (message.logDetail) console.log(message.logDetail)
             sendResponse()
-        }
-        else {
+        } else if (message.type == 'SEND_INVOCATION_RECORD'){
+            console.log('Received invocation record details from devtools.')
+            if (message.invocationRecordString) {
+                const currTab = await getCurrentTab()
+                const res = await chrome.scripting.executeScript({
+                    target: { tabId: currTab.id },
+                    func: injectedCopyFunction,
+                    args: [message.invocationRecordString]
+                });
+                console.log('Res', res)
+            }
+            sendResponse()
+        } else {
             sendResponse()
         }
     })()

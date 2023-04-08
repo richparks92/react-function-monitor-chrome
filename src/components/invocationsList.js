@@ -1,19 +1,42 @@
 import 'primeflex/primeflex.css';
 import { DataView } from 'primereact/dataview';
 import { Tree } from 'primereact/tree';
+import { Button } from 'primereact';
 import 'primeicons/primeicons.css';
-import { getTreeNodesFromInvocation } from '../scripts/util/helpers';
-
+import { getTreeNodesFromInvocation, getCurrentTab } from '../scripts/util/helpers';
+import date from 'date-and-time'
+/*global chrome*/
 
 //The outer row will separate function name/time called and the tree table
 const dataViewItemTemplate = (invocationRecord) => {
     const treeNodes = getTreeNodesFromInvocation(invocationRecord.callArgs);
+    const iDate = new Date(invocationRecord.timestamp)
+    const iTime = date.format(iDate, 'hh:mm.SS [GMT]Z')
     return (
         <div className="col-12">
-            <div className="flex flex-column xl:flex-row xl:align-items-start p-4 gap-2">
+            <div className="flex flex-column xl:flex-row xl:align-items-start p-2 gap-2">
+                <div className="flex flex-row xl:align-items-start">
+                    <div className='flex-grow-1 flex-column'>
+                        <div className="text-base font-bold">{invocationRecord.fnPath}</div>
+                        <div className="text-base text-500">{iTime}</div>
+                    </div>
+                    <div className='flex-none flex-column'>
+                        <Button label = "Copy JSON" icon="pi pi-copy" size = "small" onClick={async ()=>{
+                            console.log('Before copy')
+                            try {
+                                
+                                const res = await chrome.runtime.sendMessage({ type: 'SEND_INVOCATION_RECORD', 
+                                tabId: await getCurrentTab().id, 
+                                invocationRecordString: JSON.stringify(invocationRecord) })
 
-                <div className="text-base font-bold">{invocationRecord.fnPath}</div>
-                <div className="text-base text-500">{new Date(invocationRecord.timestamp).toString()}</div>
+                                console.log('Record copied to clipboard');
+                              } catch (err) {
+                                console.error('Failed to copy: ', err);
+                              }
+                        }}/>
+                    </div>
+                </div>
+
                 <Tree value={treeNodes}
                     nodeTemplate={treeNodeTemplate}>
                 </Tree>
@@ -42,16 +65,15 @@ export default function InvocationsList2(props) {
         return invocationRecord
     })
     return (
-        <div className = 'flex flex-column xl:flex-row xl:align-items-start p-4 gap-2'>
+        <div className='flex flex-column xl:flex-row xl:align-items-start p-4 gap-1'>
             <div className='text-xl font-bold'>Function Invocations</div>
-        <DataView value={invocationRecords} 
-        itemTemplate={dataViewItemTemplate} 
-        sortField = '_index' 
-        sortOrder={-1}
-        emptyMessage = "No recorded invocations yet!"
-        >
+            <DataView value={invocationRecords}
+                itemTemplate={dataViewItemTemplate}
+                sortField='_index'
+                sortOrder={-1}
+                emptyMessage="No recorded invocations yet.">
 
-        </DataView>
+            </DataView>
         </div>
     )
 }

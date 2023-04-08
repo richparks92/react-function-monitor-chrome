@@ -15,7 +15,8 @@
         "tabs",
         "debugger",
         "webRequest",
-        "webNavigation"
+        "webNavigation",
+        "clipboardWrite"
     ],
     "host_permissions": [
         "https://*/*"

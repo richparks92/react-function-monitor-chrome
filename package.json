@@ -7,6 +7,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "chart.js": "^3.9.1",
+    "date-and-time": "^2.4.3",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "primereact": "^8.6.1",
