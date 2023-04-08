@@ -138,6 +138,7 @@ export default class DevToolsDebugClient {
     }
 
     this.isFnWrapped = false
+    await this.clearFnDetails()
     return isSuccess
   }
 }
