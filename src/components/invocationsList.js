@@ -8,6 +8,7 @@ import { SelectButton } from 'primereact/selectbutton';
 import 'primeicons/primeicons.css';
 import { getTreeNodesFromInvocation, getCurrentTab } from '../scripts/util/helpers';
 import date from 'date-and-time'
+
 /*global chrome*/
 
 const treeNodeTemplate = (node) => {
@@ -37,7 +38,6 @@ const dataViewItemTemplate = (invocationRecord, options) => {
                         <Button label="Copy JSON" icon="pi pi-copy" size="small" onClick={async () => {
                             console.log('Before copy')
                             let recCopy = JSON.parse(JSON.stringify(invocationRecord))
-                            delete recCopy.type
                             try {
 
                                 const res = await chrome.runtime.sendMessage({
@@ -76,12 +76,12 @@ function ArgumentsDisplay({ invocationRecord, options }) {
             </div>
         )
     } else if (displayOption == 'json') {
-        const argString = JSON.stringify(invocationRecord.callArgs, null, 2)
+        const recString = JSON.stringify(invocationRecord, null, 2)
         return (
 
-            <div>
+            <div class="border-200">
                 <ScrollPanel>
-                    <pre><code>Test code</code></pre>
+                    <pre><code>{recString}</code></pre>
                 </ScrollPanel>
             </div>
 

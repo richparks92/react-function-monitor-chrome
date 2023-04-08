@@ -35,6 +35,7 @@ export default function initializeHandlers(client, {updateStateFromClientDetails
             _data.callArgs = JSON.parse(_data.callArgs)
             console.log(`Invocation record ${JSON.stringify(_data)}`);
           }
+          if(_data.type) delete _data.type
           client.addInvocationRecord(_data)
           updateStateFromClientDetails()
   
