@@ -106,7 +106,7 @@ function ArgumentsDisplay({ invocationRecord, options }) {
 format of invocation record
 {type: 'FUNCTION_CALL_EVENT', callArgs: args, timestamp: Date.now(), fnPath: '${fnPath}'}*/
 export default function InvocationsList(props) {
-    const options = [{ name: "Tree View", value: "tree" }, { name: "JSON View", value: "json" }]
+    const options = [{ name: "JSON View", value: "json" }, { name: "Tree View", value: "tree" }]
     const [displayOption, setDisplayOption] = useState("json")
     const invocationRecords = props.invocationRecords.map((invocationRecord, index) => {
         invocationRecord._index = index

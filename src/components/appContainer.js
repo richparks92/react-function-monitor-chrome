@@ -23,10 +23,6 @@ export default function AppContainer({ client }) {
     console.log(`Updating UI from client. Setting button to: ${client.isFnWrapped}`)
   }
 
-  const setPending = () => {
-    if (client.enableWrapOnPageLoad && client.isFnWrapped) setButtonPending(true)
-  }
-
   //Initialize handlers, passing client and state update functions as argument
   const setterFunctions = {
     updateStateFromClientDetails: updateStateFromClientDetails,
