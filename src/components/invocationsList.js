@@ -1,5 +1,9 @@
 import 'primeflex/primeflex.css';
-import React, { useState } from "react";
+import '../scripts/ext/prism.css';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-json';
+
+import React, { useState, useEffect } from "react";
 import { DataView } from 'primereact/dataview';
 import { Tree } from 'primereact/tree';
 import { Button } from 'primereact';
@@ -7,7 +11,7 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 import { SelectButton } from 'primereact/selectbutton';
 import 'primeicons/primeicons.css';
 import { getTreeNodesFromInvocation, getCurrentTab } from '../scripts/util/helpers';
-import date from 'date-and-time'
+import date from 'date-and-time';
 
 /*global chrome*/
 
@@ -23,7 +27,8 @@ const treeNodeTemplate = (node) => {
 
 //The outer row will separate function name/time called and the tree table
 const dataViewItemTemplate = (invocationRecord, options) => {
-    if (options) console.log('options', options)
+
+    
     const iDate = new Date(invocationRecord.timestamp)
     const iTime = date.format(iDate, 'hh:mm.SS [GMT]Z')
     return (
@@ -40,7 +45,7 @@ const dataViewItemTemplate = (invocationRecord, options) => {
                             let recCopy = JSON.parse(JSON.stringify(invocationRecord))
                             try {
 
-                                const res = await chrome.runtime.sendMessage({
+                                await chrome.runtime.sendMessage({
                                     type: 'SEND_INVOCATION_RECORD',
                                     tabId: await getCurrentTab().id,
                                     invocationRecordString: JSON.stringify(recCopy)
@@ -63,12 +68,18 @@ const dataViewItemTemplate = (invocationRecord, options) => {
 
 
 function ArgumentsDisplay({ invocationRecord, options }) {
+
+    useEffect(() => {
+        Prism.highlightAll(false, ()=>{
+            console.log('highlighted.')
+        });
+    }, [invocationRecord, options]);
+
     const displayOption = options.displayOption
     console.log('Display option:', displayOption)
     if (displayOption == 'tree') {
         const treeNodes = getTreeNodesFromInvocation(invocationRecord.callArgs);
         return (
-
             <div>
                 <Tree value={treeNodes}
                     nodeTemplate={treeNodeTemplate}>
@@ -79,14 +90,14 @@ function ArgumentsDisplay({ invocationRecord, options }) {
         const recString = JSON.stringify(invocationRecord, null, 2)
         return (
 
-            <div class="border-200">
+            <div>
                 <ScrollPanel>
-                    <pre><code>{recString}</code></pre>
+                    <pre><code className={'language-json'}>{recString}</code></pre>
                 </ScrollPanel>
             </div>
 
         )
-    } else{
+    } else {
         return (<div></div>)
     }
 }
@@ -96,8 +107,7 @@ format of invocation record
 {type: 'FUNCTION_CALL_EVENT', callArgs: args, timestamp: Date.now(), fnPath: '${fnPath}'}*/
 export default function InvocationsList(props) {
     const options = [{ name: "Tree View", value: "tree" }, { name: "JSON View", value: "json" }]
-    const [displayOption, setDisplayOption] = useState("tree")
-
+    const [displayOption, setDisplayOption] = useState("json")
     const invocationRecords = props.invocationRecords.map((invocationRecord, index) => {
         invocationRecord._index = index
         return invocationRecord
@@ -105,11 +115,11 @@ export default function InvocationsList(props) {
     return (
         <div className='flex flex-column xl:flex-row xl:align-items-start p-4 gap-1'>
             <div className='text-xl font-bold'>Function Invocations</div>
-            <SelectButton value={displayOption} 
-            onChange={(e) => setDisplayOption(e.value)} options={options} optionLabel="name" />
+            <SelectButton value={displayOption}
+                onChange={(e) => setDisplayOption(e.value)} options={options} optionLabel="name" />
 
             <DataView value={invocationRecords}
-                itemTemplate={ (item)=>{return (dataViewItemTemplate(item, {displayOption: displayOption}))}}
+                itemTemplate={(item) => { return (dataViewItemTemplate(item, { displayOption: displayOption })) }}
                 sortField='_index'
                 sortOrder={-1}
                 emptyMessage="No recorded invocations yet."
