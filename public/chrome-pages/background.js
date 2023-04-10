@@ -1,9 +1,30 @@
 import injectContentScript from "./public-utils/injectContentScriptFile.js"
 import { getCurrentTab, injectedCopyFunction} from "./public-utils/utils.js"
+ 
+
+// Background page -- background.js
+chrome.runtime.onConnect.addListener(function(devToolsConnection) {
+    // assign the listener function to a variable so we can remove it later
+    var devToolsListener = function(message, sender, sendResponse) {
+        console.log('devToolsConnection',message)
+    }
+    // add the listener
+    devToolsConnection.onMessage.addListener(devToolsListener);
+
+    devToolsConnection.onDisconnect.addListener(function() {
+         devToolsConnection.onMessage.removeListener(devToolsListener);
+    });
+});
+
+
 
 console.log('Background page starting.')
 
+
+
+//Sending messages to App (via injectContentScript).
 //Will fire once web pages fully load
+
 const onCompletedHandler = async function (details) {
     if (details.url?.startsWith('chrome://')) return undefined
     if (details.parentFrameId == -1 && details.tabId) {
@@ -19,6 +40,8 @@ const onCompletedHandler = async function (details) {
         }
     }
 }
+
+//Fires when page is about to change/navigate
 const onBeforeNavigateHandler = async function (details) {
     if (details.url?.startsWith('chrome://')) return undefined
     if (details.parentFrameId == -1 && details.tabId) {
@@ -67,6 +90,7 @@ const onMessageHandler = function (message, sender, sendResponse) {
 ////////////
 //
 ////////////
+//const port = 
 const registerListeners = function(){
     chrome.runtime.onMessage.addListener(onMessageHandler)
     chrome.webNavigation.onCompleted.addListener(onCompletedHandler)

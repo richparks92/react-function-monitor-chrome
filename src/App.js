@@ -16,7 +16,6 @@ import "primeicons/primeicons.css";                                //icons
 /*global chrome*/
 
 function App() {
-  //Try passing client as a prop to a subcomponent
   const client = new DevToolsDebugClient()
 
   useEffect(() => {
