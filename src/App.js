@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 
 import DevToolsDebugClient from './scripts/devToolsDebugClient.js'
 import sendInjectMessages from './scripts/sendInjectMessages';
-import {getBackgroundConnection, sendInjectTestScript} from './scripts/getBackgroundConnection';
+import {getBackgroundConnection, requestScriptInjection} from './scripts/requestScriptInjection';
 
 import AppContainer from './components/appContainer';
 import { Panel } from 'primereact/panel'
@@ -23,8 +23,8 @@ function App() {
 
   useEffect(() => {
     //Get window variable 
-    sendInjectMessages(client)
-    sendInjectTestScript(backgroundConnection)
+    //sendInjectMessages(client)
+    requestScriptInjection(backgroundConnection, "addDomListeners");
 
   });
 

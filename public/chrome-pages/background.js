@@ -1,4 +1,4 @@
-import injectContentScript from "./public-utils/injectContentScriptFile.js"
+import injectContentScript from "./public-utils/injectContentScript.js"
 import { getCurrentTab, injectedCopyFunction } from "./public-utils/utils.js"
 
 /////
@@ -10,15 +10,19 @@ chrome.runtime.onConnect.addListener(function (devToolsConnection) {
     // assign the listener function to a variable so we can remove it later
     var devToolsListener = async function (message, sender, sendResponse) {
         console.log('devToolsConnection', message)
-        if (message.type = "INJECT_SCRIPT_TO_TAB") {
-            try {
-                await injectContentScript(message.tabId, message.scriptFiles, false)
-                devToolsConnection.postMessage('Success')
-            }
-            catch (e) {
-                console.log(e)
-            }
+        switch (message.type) {
+            case "REQUEST_INJECTION":
+                try {
+                    await injectContentScript(message.scriptInjection)
+                    devToolsConnection.postMessage('Success')
+                }
+                catch (e) {
+                    console.log(e)
+                }
         }
+
+
+
     }
     // add the listener
     devToolsConnection.onMessage.addListener(devToolsListener);
