@@ -1,21 +1,6 @@
 /*global chrome*/
 
-// DevTools page -- devtools.js
-// Create a connection to the background page
-var backgroundPageConnection = chrome.runtime.connect({
-  name: "devtools-page"
-});
-
-backgroundPageConnection.onMessage.addListener(function (message) {
-  // Handle responses from the background page, if any
-});
-
-// Relay the tab ID to the background page
-backgroundPageConnection.postMessage('what it do');
-
 export default function (client) {
-
-
 
   console.log(`sendInjectMessages. domListenerInjected: ${client.domListenerInjected || "(doesn't exist yet)"}`)
   if (!client.domListenerInjected) {

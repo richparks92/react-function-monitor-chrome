@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 
 import DevToolsDebugClient from './scripts/devToolsDebugClient.js'
 import sendInjectMessages from './scripts/sendInjectMessages';
+import {getBackgroundConnection, sendInjectTestScript} from './scripts/getBackgroundConnection';
 
 import AppContainer from './components/appContainer';
 import { Panel } from 'primereact/panel'
@@ -17,10 +18,13 @@ import "primeicons/primeicons.css";                                //icons
 
 function App() {
   const client = new DevToolsDebugClient()
+  const backgroundConnection = getBackgroundConnection()
+  
 
   useEffect(() => {
     //Get window variable 
     sendInjectMessages(client)
+    sendInjectTestScript(backgroundConnection)
 
   });
 

@@ -1,21 +1,36 @@
 import injectContentScript from "./public-utils/injectContentScriptFile.js"
-import { getCurrentTab, injectedCopyFunction} from "./public-utils/utils.js"
- 
+import { getCurrentTab, injectedCopyFunction } from "./public-utils/utils.js"
+
+/////
+//
+/////
 
 // Background page -- background.js
-chrome.runtime.onConnect.addListener(function(devToolsConnection) {
+chrome.runtime.onConnect.addListener(function (devToolsConnection) {
     // assign the listener function to a variable so we can remove it later
-    var devToolsListener = function(message, sender, sendResponse) {
-        console.log('devToolsConnection',message)
+    var devToolsListener = async function (message, sender, sendResponse) {
+        console.log('devToolsConnection', message)
+        if (message.type = "INJECT_SCRIPT_TO_TAB") {
+            try {
+                await injectContentScript(message.tabId, message.scriptFiles, false)
+                devToolsConnection.postMessage('Success')
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
     }
     // add the listener
     devToolsConnection.onMessage.addListener(devToolsListener);
 
-    devToolsConnection.onDisconnect.addListener(function() {
-         devToolsConnection.onMessage.removeListener(devToolsListener);
+    devToolsConnection.onDisconnect.addListener(function () {
+        devToolsConnection.onMessage.removeListener(devToolsListener);
     });
 });
 
+/////
+//
+/////
 
 
 console.log('Background page starting.')
@@ -33,7 +48,7 @@ const onCompletedHandler = async function (details) {
             if (!res.domListenerInjected) {
                 const injectedListenerScript = await injectContentScript(details.tabId, ['/chrome-pages/content-scripts/addDomListeners.js'], true)
                 const injectedGetFunctionScript = await injectContentScript(details.tabId, ['/chrome-pages/content-scripts/getFunctionList.js'])
- 
+
             }
         } catch (e) {
             console.log(e)
@@ -56,7 +71,7 @@ const onBeforeNavigateHandler = async function (details) {
 const onMessageHandler = function (message, sender, sendResponse) {
     (async () => {
 
-        if(sender && sender.url.startsWith('chrome://')) sendResponse(false)
+        if (sender && sender.url.startsWith('chrome://')) sendResponse(false)
         if (message.type == 'INJECT_SCRIPT_TO_TAB') {
             console.log('Received inject message.')
             if (!message.tabId || !message.scriptFiles || message.scriptFiles.length < 1) sendResponse(false)
@@ -67,7 +82,7 @@ const onMessageHandler = function (message, sender, sendResponse) {
             console.log('LOG: ' + message.logSummary)
             if (message.logDetail) console.log(message.logDetail)
             sendResponse()
-        } else if (message.type == 'SEND_INVOCATION_RECORD'){
+        } else if (message.type == 'SEND_INVOCATION_RECORD') {
             console.log('Received invocation record details from devtools.')
             if (message.invocationRecordString) {
                 const currTab = await getCurrentTab()
@@ -91,7 +106,7 @@ const onMessageHandler = function (message, sender, sendResponse) {
 //
 ////////////
 //const port = 
-const registerListeners = function(){
+const registerListeners = function () {
     chrome.runtime.onMessage.addListener(onMessageHandler)
     chrome.webNavigation.onCompleted.addListener(onCompletedHandler)
     chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigateHandler)
