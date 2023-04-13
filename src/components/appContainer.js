@@ -1,6 +1,6 @@
 import './css/appContainer.css'
 import React, { useState } from "react";
-import initializeHandlers from '../scripts/initializeHandlers.js';
+import {initializePortMessageHandlers} from '../scripts/initializePortMessageHandlers.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
 import FunctionForm from './functionForm';
 import InvocationsList from './invocationsList';
@@ -8,7 +8,8 @@ import 'primeflex/primeflex.css';
 
 /*global chrome*/
 
-export default function AppContainer({ client }) {
+export default function AppContainer({ client, backgroundConnection }) {
+  console.log('AppContainer loading')
   const [buttonActive, setButtonActive] = useState(false)
   const [buttonPending, setButtonPending] = useState(false)
   const [functionInfo, setFunctionInfo] = useState({ fnName: '', fnParentPath: '' })
@@ -33,7 +34,9 @@ export default function AppContainer({ client }) {
     setFnSuggestionArray: setFnSuggestionArray
   }
 
-  initializeHandlers(client, setterFunctions)
+
+  console.log('Client state: ', client)
+  initializePortMessageHandlers(client, setterFunctions, backgroundConnection)
   client.addSetterFunctions(setterFunctions)
 
   return (

@@ -1,14 +1,18 @@
 console.log('Function call listener contentscript started.')
 
-window.addEventListener("message", (event) => {
-    if (chrome && chrome.runtime){
+const port = chrome.runtime.connect({ name: "domListeners" });
+port.onMessage.addListener(function (msg) {
+  console.log('Port message received from content script.', msg)
+});
 
-    
+//Need to add port
+window.addEventListener("message", (event) => {
+  if (chrome?.runtime) {
     if (event.data.type == 'FUNCTION_CALL_EVENT') {
-      chrome.runtime.sendMessage({ type: 'FUNCTION_CALL_DETAILS', data: event.data })
+      port.postMessage({ type: 'FUNCTION_CALL_DETAILS', data: event.data })
 
     } else if (event.data.type == 'FN_ARRAY_READY_EVENT') {
-      chrome.runtime.sendMessage({ type: 'FN_ARRAY_RESULT', fnArray: event.data.fnArray })
+      port.postMessage({ type: 'FN_ARRAY_RESULT', fnArray: event.data.fnArray })
     }
   }
 }, false)

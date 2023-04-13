@@ -15,8 +15,9 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
 
     const buttonClickHandler = async () => {
         //Handle if client is not wrapped
+        console.log('Button clicked.')
         const _selectedFn = selectedFn.trim()
-        const _fnPath = client.fnDetails && client.fnDetails.fnPath && client.fnDetails.fnPath.length > 0 ? client.fnDetails.fnPath : undefined
+        const _fnPath = client?.fnDetails?.fnPath && client.fnDetails.fnPath.length > 0 ? client.fnDetails.fnPath : undefined
 
         if (!client.isFnWrapped) {
             if (_fnPath && (_selectedFn.length < 1 || _selectedFn == _fnPath)) {
@@ -35,6 +36,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
             }
         } else {
             //If client is wrapped
+            console.log('Client is already wrapped; triggering unwrapping function.')
             await client.unwrapFunction();
         }
 
@@ -46,7 +48,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
         setTimeout(() => {
             let _filteredSuggestions = []
             let query = event.query.trim()
-            console.log(`Query: "${query}"`)
+            //console.log(`Query: "${query}"`)
             const isFnWrapped = client.isFnWrapped
             //If fnSuggestionArray is empty then exit function
             if (fnSuggestionArray.length > 0) {

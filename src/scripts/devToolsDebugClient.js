@@ -101,15 +101,25 @@ export default class DevToolsDebugClient {
     }
 
     try {
+
+      console.log('Client: Triggering wrap function.')
       await evaluateExpressionAsync(wrappingExpressions.wrapFunction)
+
     } catch (e) {
+
       console.log('Error while wrapping function.')
       console.log(e)
       return false
+      
     }
+
     //Log end 
     await evaluateExpressionAsync(wrappingExpressions.logEnd)
+    /*
+    domListenerInjected is false, that's why it's not updating
+    */
 
+    console.log('Finished wrapping. evaluateSuccess:', evaluateSuccess, 'domListenerInjected: ', this.domListenerInjected)
     if (evaluateSuccess && this.domListenerInjected) this.isFnWrapped = true
     return evaluateSuccess && this.domListenerInjected
   }

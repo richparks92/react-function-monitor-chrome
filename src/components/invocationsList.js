@@ -26,14 +26,13 @@ const treeNodeTemplate = (node) => {
 }
 
 //The outer row will separate function name/time called and the tree table
-const dataViewItemTemplate = (invocationRecord, options) => {
+const dataViewItemTemplate = (invocationRecord, options, backgroundConnection) => {
 
-    
     const iDate = new Date(invocationRecord.timestamp)
     const iTime = date.format(iDate, 'hh:mm.SS [GMT]Z')
     return (
         <div className="col-12">
-            <div className="flex flex-column xl:flex-row xl:align-items-start p-2 gap-2">
+            <div className="flex flex-columnp-2 gap-2">
                 <div className="flex flex-row xl:align-items-start">
                     <div className='flex-grow-1 flex-column'>
                         <div className="text-base font-bold">{invocationRecord.fnPath}</div>
@@ -44,11 +43,10 @@ const dataViewItemTemplate = (invocationRecord, options) => {
                             console.log('Before copy')
                             let recCopy = JSON.parse(JSON.stringify(invocationRecord))
                             try {
-
-                                await chrome.runtime.sendMessage({
-                                    type: 'SEND_INVOCATION_RECORD',
+                                backgroundConnection.postMessage({
+                                    type: 'COPY_TEXT_TO_CLIPBOARD',
                                     tabId: await getCurrentTab().id,
-                                    invocationRecordString: JSON.stringify(recCopy)
+                                    textToCopy: JSON.stringify(recCopy)
                                 })
 
                                 console.log('Record copied to clipboard');
@@ -78,7 +76,7 @@ function ArgumentsDisplay({ invocationRecord, options }) {
     const displayOption = options.displayOption
     console.log('Display option:', displayOption)
     if (displayOption == 'tree') {
-        const treeNodes = getTreeNodesFromInvocation(invocationRecord.callArgs);
+        const treeNodes = getTreeNodesFromInvocation(invocationRecord?.callArgs);
         return (
             <div>
                 <Tree value={treeNodes}
@@ -105,10 +103,12 @@ function ArgumentsDisplay({ invocationRecord, options }) {
 /*
 format of invocation record
 {type: 'FUNCTION_CALL_EVENT', callArgs: args, timestamp: Date.now(), fnPath: '${fnPath}'}*/
-export default function InvocationsList(props) {
+export default function InvocationsList({invocationRecords, backgroundConnection}) {
+    console.log('Loading InvocationsList. Records: ', invocationRecords)
     const options = [{ name: "JSON View", value: "json" }, { name: "Tree View", value: "tree" }]
     const [displayOption, setDisplayOption] = useState("json")
-    const invocationRecords = props.invocationRecords.map((invocationRecord, index) => {
+
+    invocationRecords = invocationRecords.map((invocationRecord, index) => {
         invocationRecord._index = index
         return invocationRecord
     })
@@ -119,7 +119,7 @@ export default function InvocationsList(props) {
                 onChange={(e) => setDisplayOption(e.value)} options={options} optionLabel="name" />
 
             <DataView value={invocationRecords}
-                itemTemplate={(item) => { return (dataViewItemTemplate(item, { displayOption: displayOption })) }}
+                itemTemplate={(item) => { return (dataViewItemTemplate(item, { displayOption: displayOption }, backgroundConnection)) }}
                 sortField='_index'
                 sortOrder={-1}
                 emptyMessage="No recorded invocations yet."

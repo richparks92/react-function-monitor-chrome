@@ -4,6 +4,7 @@ export default function (client) {
 
   console.log(`sendInjectMessages. domListenerInjected: ${client.domListenerInjected || "(doesn't exist yet)"}`)
   if (!client.domListenerInjected) {
+    //In future will check dom and func list injections independently on page lad/app load
     //Messages are being sent to background.js, so set up port to exchange between the two
     //Send messages to inject if client status is not injected.
     console.log('Sending message to inject DOM listener.')
