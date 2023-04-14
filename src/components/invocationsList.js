@@ -32,13 +32,13 @@ const dataViewItemTemplate = (invocationRecord, options, backgroundConnection) =
     const iTime = date.format(iDate, 'hh:mm.SS [GMT]Z')
     return (
         <div className="col-12">
-            <div className="flex flex-columnp-2 gap-2">
+            <div className="flex flex-column p-2 gap-2">
                 <div className="flex flex-row">
                     <div className='flex-grow-1 flex-column'>
                         <div className="text-base font-bold">{invocationRecord.fnPath}</div>
                         <div className="text-base text-500">{iTime}</div>
                     </div>
-                    <div className='flex-none flex-column'>
+                    <div className='flex-column'>
                         <Button label="Copy JSON" icon="pi pi-copy" size="small" onClick={async () => {
                             console.log('Before copy')
                             let recCopy = JSON.parse(JSON.stringify(invocationRecord))
