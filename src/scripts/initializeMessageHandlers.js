@@ -7,8 +7,9 @@ import { requestScriptInjection } from './requestScriptInjection.js'
 
 export function initializeMessageHandlers(client, { updateStateFromClientDetails, setButtonPending, setFnSuggestionArray }, backgroundPageConnection) {
   const inspectedTabId = chrome.devtools.inspectedWindow.tabId
+  console.log('Inspected Tab ID: ', inspectedTabId)
   async function handleMessagesFromBackground(message, port) {
-    
+
     if (message.tabId !== inspectedTabId) return
     console.log('Message from background.js:', message, 'Port:', port)
     // Handle responses from the background page, if any
@@ -51,10 +52,13 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
 
   }
 
-  //Need onconnect
+  //handle Messages From Dom
   async function handleMessagesFromDom(message, port) {
-    if (message.tabId !== inspectedTabId) return
-    console.log('Message from background.js:', message, 'Port:', port)
+    console.log('Message from DOM/content script:', message, 'From TabID: ', port.sender.tab.id, 'Port:', port)
+    
+    //This will always return false, tabID isn't sent through message
+    //if (message.tabId !== inspectedTabId) return
+
 
     switch (message.type) {
       case 'FUNCTION_CALL_DETAILS':
@@ -63,7 +67,7 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
         _data = message?.data
         if (_data?.callArgs) {
           _data.callArgs = JSON.parse(_data?.callArgs)
-          console.log(`Invocation record ${JSON.stringify(_data)}`);
+          console.log('Invocation record received', JSON.stringify(_data));
         }
         //if (_data.type) delete _data.type
         client.addInvocationRecord(_data)
@@ -71,7 +75,7 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
         break;
 
       case 'FN_ARRAY_RESULT':
-        console.log('fn_array message received by devTools.')
+        console.log('fn_array message received by devTools.', message.fnArray)
         setFnSuggestionArray(message.fnArray);
         break;
     }
