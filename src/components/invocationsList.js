@@ -33,7 +33,7 @@ const dataViewItemTemplate = (invocationRecord, options, backgroundConnection) =
     return (
         <div className="col-12">
             <div className="flex flex-columnp-2 gap-2">
-                <div className="flex flex-row xl:align-items-start">
+                <div className="flex flex-row">
                     <div className='flex-grow-1 flex-column'>
                         <div className="text-base font-bold">{invocationRecord.fnPath}</div>
                         <div className="text-base text-500">{iTime}</div>
@@ -113,7 +113,7 @@ export default function InvocationsList({invocationRecords, backgroundConnection
         return invocationRecord
     })
     return (
-        <div className='flex flex-column xl:flex-row xl:align-items-start p-4 gap-1'>
+        <div className='flex flex-column p-4 gap-1'>
             <div className='text-xl font-bold'>Function Invocations</div>
             <SelectButton value={displayOption}
                 onChange={(e) => setDisplayOption(e.value)} options={options} optionLabel="name" />

@@ -1,6 +1,6 @@
 import './css/appContainer.css'
 import React, { useState } from "react";
-import {initializePortMessageHandlers} from '../scripts/initializePortMessageHandlers.js';
+import {initializeMessageHandlers} from '../scripts/initializeMessageHandlers.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
 import FunctionForm from './functionForm';
 import InvocationsList from './invocationsList';
@@ -36,7 +36,7 @@ export default function AppContainer({ client, backgroundConnection }) {
 
 
   console.log('Client state: ', client)
-  initializePortMessageHandlers(client, setterFunctions, backgroundConnection)
+  initializeMessageHandlers(client, setterFunctions, backgroundConnection)
   client.addSetterFunctions(setterFunctions)
 
   return (

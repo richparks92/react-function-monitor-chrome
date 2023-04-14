@@ -7,6 +7,8 @@ export default class DevToolsDebugClient {
     this.fnDetails = {}
     this.setters = {}
     this.isFnWrapped = false
+    this.domListenerInjected = false
+    this.getFnsInjected = false
     if (fnPath) this.setFnDetails(fnPath)
     if (!this.invocationRecords) this.invocationRecords = []
     this.enableWrapOnPageLoad = false
@@ -115,9 +117,6 @@ export default class DevToolsDebugClient {
 
     //Log end 
     await evaluateExpressionAsync(wrappingExpressions.logEnd)
-    /*
-    domListenerInjected is false, that's why it's not updating
-    */
 
     console.log('Finished wrapping. evaluateSuccess:', evaluateSuccess, 'domListenerInjected: ', this.domListenerInjected)
     if (evaluateSuccess && this.domListenerInjected) this.isFnWrapped = true

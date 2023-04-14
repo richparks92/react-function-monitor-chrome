@@ -8,8 +8,8 @@ console.log('Background page starting.')
 
 // Background page -- background.js
 chrome.runtime.onConnect.addListener(function (port) {
-    //if (port.name == 'devtools-page')...
     console.log('Background page-- runtime connect listener triggered. Port: ', port)
+    
     // assign the listener function to a variable so we can remove it later
     const devToolsListener = async function (message, port) {
         console.log('devToolsConnection', message, 'port', port)
@@ -29,9 +29,9 @@ chrome.runtime.onConnect.addListener(function (port) {
 
 
     const onCompletedHandler = async function (details) {
-        console.log('Window loaded. Details: ', details)
+        //console.log('Window loaded. Details: ', details)
         if (details.url?.startsWith('chrome://')) return undefined
-        if (details.parentFrameId == -1 && details.tabId) {
+        if (details.frameId === 0 && details.tabId) {
 
             try {
                 port.postMessage({ type: 'WINDOW_LOADED', tabId: details.tabId })
@@ -43,9 +43,9 @@ chrome.runtime.onConnect.addListener(function (port) {
     }
 
     const onBeforeNavigateHandler = async function (details) {
-        console.log('Window about to navigate. Details: ', details)
+        //console.log('Window about to navigate. Details: ', details)
         if (details.url?.startsWith('chrome://')) return undefined
-        if (details.parentFrameId == -1 && details.tabId) {
+        if (details.frameId === 0 && details.tabId) {
 
             try {
                 port.postMessage({ type: 'BEFORE_NAVIGATE', tabId: details.tabId })
@@ -54,7 +54,6 @@ chrome.runtime.onConnect.addListener(function (port) {
             }
         }
     }
-
 
     if (port.name == 'devtools-page') {
         // add the listener
