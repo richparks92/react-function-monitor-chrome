@@ -54,7 +54,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
             if (fnSuggestionArray.length > 0) {
                 if (query.length > 0) {
                     _filteredSuggestions = fnSuggestionArray.filter((fn) => {
-                        return fn.startsWith(query) || fn.startsWith(`window.${query}`);
+                        return fn.toLowerCase().startsWith(query.toLowerCase()) || fn.toLowerCase().startsWith(`window.${query}`.toLowerCase());
                     });
                 }
                 //If fnSuggestionArray > 0 AND query is empty
@@ -77,7 +77,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
         <div>
             <h4>Select Function</h4>
             <div className="functionForm">
-                <AutoComplete  value={selectedFn} minLength="0" size = "40"
+                <AutoComplete value={selectedFn} minLength="0" size="40"
                     suggestions={filteredSuggestions}
                     completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)}
                     disabled={inputDisabled}

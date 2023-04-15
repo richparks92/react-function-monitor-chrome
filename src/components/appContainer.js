@@ -43,6 +43,6 @@ export default function AppContainer({ client, backgroundConnection }) {
     <div className="App-body-container">
       <FunctionForm client={client} fnSuggestionArray={fnSuggestionArray} buttonActive={buttonActive} buttonPending={buttonPending}></FunctionForm>
       <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
-      <InvocationsList invocationRecords={invocationRecords}></InvocationsList>
+      <InvocationsList invocationRecords={invocationRecords} backgroundConnection={backgroundConnection}></InvocationsList>
     </div>)
 }

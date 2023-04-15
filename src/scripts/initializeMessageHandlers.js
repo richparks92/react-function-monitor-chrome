@@ -26,6 +26,9 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
           client.getFnsInjected = message.injectSuccessful
           console.log('Setting client.getFnsInjected to', client.getFnsInjected, ' based off inject response.')
         }
+        if (message?.scriptKey == 'copyTextToClipboard') {
+          console.log('Copy inject successful: ', message.injectSuccessful)
+        }
         break;
 
       case 'WINDOW_LOADED':
@@ -83,7 +86,7 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
   }
 
   console.log('client.handlersInitialized = ', client.handlersInitialized)
-
+//need separate handlersInitialized
   if (!client.handlersInitialized) {
     //Add DOM connection and listener
     chrome.runtime.onConnect.addListener(function (port) {

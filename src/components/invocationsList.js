@@ -44,8 +44,8 @@ const dataViewItemTemplate = (invocationRecord, options, backgroundConnection) =
                             let recCopy = JSON.parse(JSON.stringify(invocationRecord))
                             try {
                                 backgroundConnection.postMessage({
-                                    type: 'COPY_TEXT_TO_CLIPBOARD',
-                                    tabId: await getCurrentTab().id,
+                                    type: 'COPY_TEXT_TO_CLIPBOARD',                                  
+                                    tabId: chrome.devtools.inspectedWindow.tabId,
                                     textToCopy: JSON.stringify(recCopy)
                                 })
 

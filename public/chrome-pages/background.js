@@ -5,14 +5,15 @@ import { getCurrentTab } from "./public-utils/utils.js"
 //
 /////
 console.log('Background page starting.')
+const connections = {}
 
 // Background page -- background.js
 chrome.runtime.onConnect.addListener(function (port) {
     console.log('Background page-- runtime connect listener triggered. Port: ', port)
-    
+
     // assign the listener function to a variable so we can remove it later
     const devToolsListener = async function (message, port) {
-        console.log('devToolsConnection', message, 'port', port)
+        console.log('devToolsConnection incoming message:', message, 'port', port)
         switch (message.type) {
             case "REQUEST_INJECTION":
                 try {
@@ -23,6 +24,20 @@ chrome.runtime.onConnect.addListener(function (port) {
                 catch (e) {
                     console.log(e)
                 }
+                break;
+
+            case "COPY_TEXT_TO_CLIPBOARD":
+                try {
+                    const scriptKey = 'copyTextToClipboard'
+                    const res = await injectScript(scriptKey, message.tabId, [message.textToCopy])
+                    console.log('Background - Success injecting:', message.scriptKey)
+                    port.postMessage({ type: 'INJECT_RESULT', scriptKey: scriptKey, injectSuccessful: res, tabId: message.tabId })
+                }
+                catch (e) {
+                    console.log(e)
+                }
+                break;
+
         }
 
     }
