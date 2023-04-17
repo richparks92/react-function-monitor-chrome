@@ -12,7 +12,7 @@ export default class DevToolsDebugClient {
     if (fnPath) this.setFnDetails(fnPath)
     if (!this.invocationRecords) this.invocationRecords = []
     this.enableWrapOnPageLoad = false
-    this.setters.updateStateFromClientDetails = () => { console.log('No setters.updateState exists.')}
+    this.setters.updateStateFromClientDetails = () => { console.log('No setters.updateState exists.') }
   }
 
   setFnDetails(fnPath) {
@@ -54,10 +54,27 @@ export default class DevToolsDebugClient {
       invocationRecords: this.invocationRecords
     }
   }
+
   async toggleFunctionWrapper() {
     //If toggle is initially OFF, evaluate if it should be turned on
-    this.isFnWrapped ? await this.unwrapFunction() : this.wrapFunction()
+    this.isFnWrapped ? await this.unwrapFunction() : await this.wrapFunction()
     return this.isFnWrapped
+  }
+
+  async doesFunctionExist(_fnPath) {
+    _fnPath = _fnPath || this.fnDetails.path
+    const wrappingExpressions = getSplitWrapperExpressionStrings(_fnPath)
+    //Check if function exists
+    try {
+      const fnExists = await evaluateExpressionAsync(wrappingExpressions.functionExistsCheck, true, 5, 100)
+      console.log(`Checking if ${_fnPath} exists: `, fnExists)
+      return fnExists.isException ? false : fnExists
+
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+
   }
 
   //Wrap function and if successful update isFnWrapped
@@ -69,16 +86,25 @@ export default class DevToolsDebugClient {
 
     const wrappingExpressions = getSplitWrapperExpressionStrings(fnPath)
     //Check if function exists
+    const fnExists = await this.doesFunctionExist()
+    if (!this.doesFunctionExist()) return false
+
+    //Log start
+    await evaluateExpressionAsync(wrappingExpressions.logStart)
+
+    //Check if fn is already copied into _fnWrapper. If so function was wrapped but never unwrapped so we just return true.
     try {
-      const existsCheck = await evaluateExpressionAsync(wrappingExpressions.functionExistsCheck, true, 50, 100)
-      if (existsCheck.isException) return false
+      console.log('Sending check for copy function')
+      const copyExists = await evaluateExpressionAsync(wrappingExpressions.copyFunctionExistsCheck)
+      if (copyExists) {
+        console.log('Function copy already exists.')
+        onWrapSuccess(this)
+        return true
+      }
 
     } catch (e) {
       console.log(e)
-      return false
     }
-    //Log start
-    await evaluateExpressionAsync(wrappingExpressions.logStart)
 
     //Get stringified function constructor so we can try to extract arguments
     try {
@@ -90,16 +116,24 @@ export default class DevToolsDebugClient {
     } catch (e) {
       console.log("Error extracting function arguments from prototype:")
       console.log(e)
+      //return false
     }
-    
+
     //Copy function to *_fnWrapper.originalFunctionCopy*
     try {
-      await evaluateExpressionAsync(wrappingExpressions.copyMethod)
+
+     const res = await evaluateExpressionAsync(wrappingExpressions.copyMethod)
       evaluateSuccess = true
+      if (res.isException=== true){
+        console.log('Error copying original function.')
+        return false
+      }
+
     } catch (e) {
+
       console.log('Error copying original function.')
       console.log(e)
-      evaluateSuccess = false
+      return false
     }
 
     try {
@@ -112,14 +146,18 @@ export default class DevToolsDebugClient {
       console.log('Error while wrapping function.')
       console.log(e)
       return false
-      
+
     }
 
     //Log end 
     await evaluateExpressionAsync(wrappingExpressions.logEnd)
 
-    console.log('Finished wrapping. evaluateSuccess:', evaluateSuccess, 'domListenerInjected: ', this.domListenerInjected)
-    if (evaluateSuccess && this.domListenerInjected) this.isFnWrapped = true
+    function onWrapSuccess(_client) {
+      console.log('Finished wrapping. evaluateSuccess:', evaluateSuccess, 'domListenerInjected: ', _client.domListenerInjected)
+      _client.isFnWrapped = true
+    }
+    
+    if (evaluateSuccess && this.domListenerInjected) onWrapSuccess(this)
     return evaluateSuccess && this.domListenerInjected
   }
 

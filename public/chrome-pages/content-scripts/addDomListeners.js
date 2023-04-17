@@ -1,5 +1,5 @@
-console.log('Function call listener contentscript started.')
-
+console.log('addDomListeners started.')
+//Need to add disconnect listener
 function addDomListeners() {
 
   let domListenerPort
@@ -13,7 +13,7 @@ function addDomListeners() {
   window.addEventListener("message", (event) => {
     if (chrome?.runtime) {
       if (event.data.type == 'FUNCTION_CALL_EVENT') {
-        domListenerPort.postMessage({ type: 'FUNCTION_CALL_DETAILS', data: event.data })
+        domListenerPort.postMessage({ type: 'FUNCTION_CALL_DETAILS', data: event.data.invocationRecord })
 
       } else if (event.data.type == 'FN_ARRAY_READY_EVENT') {
         domListenerPort.postMessage({ type: 'FN_ARRAY_RESULT', fnArray: event.data.fnArray })
@@ -21,5 +21,6 @@ function addDomListeners() {
     }
   }, false)
 }
+
 addDomListeners()
 

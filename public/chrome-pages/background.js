@@ -30,7 +30,7 @@ chrome.runtime.onConnect.addListener(function (port) {
                 try {
                     const scriptKey = 'copyTextToClipboard'
                     const res = await injectScript(scriptKey, message.tabId, [message.textToCopy])
-                    console.log('Background - Success injecting:', message.scriptKey)
+                    console.log('Background - Success injecting:', scriptKey)
                     port.postMessage({ type: 'INJECT_RESULT', scriptKey: scriptKey, injectSuccessful: res, tabId: message.tabId })
                 }
                 catch (e) {

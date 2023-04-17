@@ -122,6 +122,7 @@ export default function InvocationsList({invocationRecords, backgroundConnection
                 itemTemplate={(item) => { return (dataViewItemTemplate(item, { displayOption: displayOption }, backgroundConnection)) }}
                 sortField='_index'
                 sortOrder={-1}
+                paginator rows={5}
                 emptyMessage="No recorded invocations yet."
                 options={{ displayOption: displayOption }}>
 

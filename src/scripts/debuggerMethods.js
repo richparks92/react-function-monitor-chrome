@@ -37,7 +37,6 @@ export async function evaluateExpressionAsync(expression, validationValue, retry
     if (attempt < retryAttempts + 1) await wait(retryInterval || RETRY_INTERVAL_DEFAULT)
 
   }
-
   return lastResult
 }
 
@@ -63,7 +62,7 @@ export function getSplitWrapperExpressionStrings(fnPath) {
     }
     
     getConstructorString(${fnPath})`
-
+  wrappingExpressions.copyFunctionExistsCheck = `typeof (_fnWrapper)!=="undefined" && typeof(_fnWrapper?.originalFunctionCopy)==='function' && _fnWrapper?.originalFunctionCopy !== 'window.dataLayer.push'`
   wrappingExpressions.copyMethod =
     `var method = ${fnPath}
       var _fnWrapper = {}
@@ -76,7 +75,7 @@ export function getSplitWrapperExpressionStrings(fnPath) {
           var args = [].slice.call(arguments)
           var argsJSON = JSON.stringify(args)
           method.apply(this, args)
-          message = {type: 'FUNCTION_CALL_EVENT', callArgs: argsJSON, timestamp: Date.now(), fnPath: '${fnPath}'}
+          message = {type: 'FUNCTION_CALL_EVENT', invocationRecord:{callArgs: argsJSON, timestamp: Date.now(), fnPath: '${fnPath}'}}
           console.log('Function called.')
           console.log(message)
           window.postMessage(message)
@@ -93,7 +92,7 @@ export function getSplitWrapperExpressionStrings(fnPath) {
 export function getSplitUnwrapperExpressionStrings(fnPath) {
   let unwrappingExpressions = {}
   unwrappingExpressions.functionExistsCheck = `typeof(${fnPath}) === 'function'`
-  unwrappingExpressions.copyFunctionExistsCheck = `typeof(_fnWrapper.originalFunctionCopy)==='function'`
+  unwrappingExpressions.copyFunctionExistsCheck = `typeof(_fnWrapper?.originalFunctionCopy)==='function'`
   unwrappingExpressions.logStart = `console.log("Unwrapping [${fnPath}] function.")`
   unwrappingExpressions.unwrapFunction = `
       ${fnPath} = _fnWrapper.originalFunctionCopy

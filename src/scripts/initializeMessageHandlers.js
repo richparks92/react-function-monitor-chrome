@@ -8,6 +8,7 @@ import { requestScriptInjection } from './requestScriptInjection.js'
 export function initializeMessageHandlers(client, { updateStateFromClientDetails, setButtonPending, setFnSuggestionArray }, backgroundPageConnection) {
   const inspectedTabId = chrome.devtools.inspectedWindow.tabId
   console.log('Inspected Tab ID: ', inspectedTabId)
+
   async function handleMessagesFromBackground(message, port) {
 
     if (message.tabId !== inspectedTabId) return
@@ -32,15 +33,19 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
         break;
 
       case 'WINDOW_LOADED':
+        console.log('window_loaded message received by devTools. Requesting script injection: ')
+        requestScriptInjection(backgroundPageConnection, "addDomListeners");
+        await wait(1000)
+        requestScriptInjection(backgroundPageConnection, "getFunctionList");
         if (client.enableWrapOnPageLoad == true) {
-          console.log('window_loaded message received by devTools.')
           //Should add setting for wait time
-          requestScriptInjection(backgroundPageConnection, "addDomListeners");
-          requestScriptInjection(backgroundPageConnection, "getFunctionList");
+            console.log('Rewrapping function after page load: ')
           await wait(2000);
           await client.wrapFunction();
           updateStateFromClientDetails();
           setButtonPending(false)
+          await wait(3000);
+          requestScriptInjection(backgroundPageConnection, "getFunctionList");
         }
         break;
 
@@ -86,7 +91,8 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
   }
 
   console.log('client.handlersInitialized = ', client.handlersInitialized)
-//need separate handlersInitialized
+
+function registerListeners (){
   if (!client.handlersInitialized) {
     //Add DOM connection and listener
     chrome.runtime.onConnect.addListener(function (port) {
@@ -97,6 +103,7 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
         port.onDisconnect.addListener(function () {
           console.log('initializeMH -- port disconnected, removing listener.')
           port.onMessage.removeListener(handleMessagesFromDom);
+          client.handlersInitialized = false
         });
 
       }
@@ -109,5 +116,8 @@ export function initializeMessageHandlers(client, { updateStateFromClientDetails
     console.log('Registering devTools listeners.')
 
   }
+}
+registerListeners()
+
 
 }

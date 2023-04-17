@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { AutoComplete } from 'primereact'
 import { Button } from 'primereact/button'
+import { OverlayPanel } from 'primereact'
+//import { wait } from '@testing-library/user-event/dist/utils'
+import { wait } from '../scripts/util/helpers'
 import './css/functionForm.css'
 
 export default function FunctionForm({ client, fnSuggestionArray, buttonActive, buttonPending }) {
@@ -11,29 +14,47 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
     const [buttonDisabled, setButtonDisabled] = useState(true)
     const [inputDisabled, setInputDisabled] = useState(false)
 
+    const overlayRef = useRef(null)
     const buttonLabel = buttonActive ? 'Disable Listener' : 'Enable Listener'
 
-    const buttonClickHandler = async () => {
-        //Handle if client is not wrapped
-        console.log('Button clicked.')
-        const _selectedFn = selectedFn.trim()
-        const _fnPath = client?.fnDetails?.fnPath && client.fnDetails.fnPath.length > 0 ? client.fnDetails.fnPath : undefined
 
+    function showOverlay(e) {
+        overlayRef.current.show(e)
+        setTimeout(overlayRef.current.hide, 2500)
+    }
+
+    async function shouldWrapFn(_selectedFn) {
+        const _fnPath = client?.fnDetails?.fnPath && client.fnDetails.fnPath.length > 0 ? client.fnDetails.fnPath : undefined
+        if (_fnPath) await client.clearFnDetails()
+
+        if (_selectedFn.length < 1) {
+            console.log("No input function.")
+            return false
+
+        } else {
+            const fnExists = await client.doesFunctionExist(_selectedFn);
+            
+            return fnExists
+        }
+    }
+
+    const buttonClickHandler = async (e) => {
+
+        console.log('Button clicked.')
+        const _selectedFn = selectedFn
+
+        //Handle if client is not wrapped
         if (!client.isFnWrapped) {
-            if (_fnPath && (_selectedFn.length < 1 || _selectedFn == _fnPath)) {
+
+            if (await shouldWrapFn(_selectedFn)) {
+                await client.setFnDetails(_selectedFn)
+                console.log('Wrapping selected function.')
                 await client.wrapFunction()
-                console.log('Wrapping existing function.')
+            } else {
+                showOverlay(e)
                 return
             }
 
-            if (_selectedFn.length > 0) {
-                await client.setFnDetails(_selectedFn)
-                await client.wrapFunction()
-                console.log('Wrapping selected function.')
-            }
-            if (!_fnPath && _selectedFn.length < 1) {
-                console.log("No input function.")
-            }
         } else {
             //If client is wrapped
             console.log('Client is already wrapped; triggering unwrapping function.')
@@ -77,20 +98,28 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
         <div>
             <h4>Select Function</h4>
             <div className="functionForm">
-                <AutoComplete value={selectedFn} minLength="0" size="40"
-                    suggestions={filteredSuggestions}
-                    completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)}
-                    disabled={inputDisabled}
-                    onClick={() => {
-                        //setInputDisabled(false)
-                        console.log('Clicked input.')
-                    }} />
+                <div>
+                    <AutoComplete value={selectedFn} minLength="0" size="40"
+                        suggestions={filteredSuggestions}
+                        completeMethod={searchFns} onChange={(e) => setSelectedFn(e.value)||''.trim()}
+                        disabled={inputDisabled}
+                        onClick={() => {
+                            //setInputDisabled(false)
+                            console.log('Clicked input.')
+                        }} />
+                </div>
+                <div>
+                    <Button icon="pi pi-check" loadingIcon="pi pi-spin pi-spinner" loading={buttonPending}
+                        iconPos="right"
+                        onClick={(e) => { (async () => await buttonClickHandler(e))() }}
+                        disabled={buttonDisabled}
+                        label={buttonLabel} />
+                    <OverlayPanel ref={overlayRef}>
+                        <p>That ain't no function pleighboi.</p>
+                    </OverlayPanel>
 
-                <Button icon="pi pi-check" loadingIcon="pi pi-spin pi-spinner" loading={buttonPending}
-                    iconPos="right"
-                    onClick={(e) => { (async () => await buttonClickHandler())() }}
-                    disabled={buttonDisabled}
-                    label={buttonLabel} />
+                </div>
+
             </div>
         </div>
 
