@@ -16,13 +16,14 @@ import "primeicons/primeicons.css";                                //icons
 
 function App() {
   console.log('Starting App.')
-  const client = new DevToolsDebugClient()
+  const Client = new DevToolsDebugClient()
   const backgroundConnection = getBackgroundConnection()
   
 
   useEffect(() => {
     //Get window variable 
-    //sendInjectMessages(client)
+    //sendInjectMessages(Client)
+    console.log('App: useEffect.')
     requestScriptInjection(backgroundConnection, "addDomListeners");
     requestScriptInjection(backgroundConnection, "getFunctionList" );
 
@@ -31,7 +32,7 @@ function App() {
   return (
     <div className="App">
       <Panel header="Funtion Monitor Extension">
-        <AppContainer client={client} backgroundConnection={backgroundConnection}></AppContainer>
+        <AppContainer Client={Client} backgroundConnection={backgroundConnection}></AppContainer>
       </Panel>
     </div>
 

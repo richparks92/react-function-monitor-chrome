@@ -14,7 +14,7 @@ export default function FunctionInfoPanel({ functionName, functionParentPath }) 
           {functionName && functionName.length > 0 && 
             <Fragment>
               <span style={{ color: "gray" }}>{functionParentPath}</span>
-              <span style={{ color: "orange", fontSize: "20px", fontWeight: "bold" }}>{functionParentPath.length>0?'.':''}{functionName}</span>
+              <span style={{ color: "orange", fontSize: "20px", fontWeight: "bold" }}>{functionParentPath.length>0?'.':''}{functionName}{'()'}</span>
             </Fragment>
           }
 

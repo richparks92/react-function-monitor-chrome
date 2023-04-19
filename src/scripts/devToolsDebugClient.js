@@ -87,7 +87,7 @@ export default class DevToolsDebugClient {
     const wrappingExpressions = getSplitWrapperExpressionStrings(fnPath)
     //Check if function exists
     const fnExists = await this.doesFunctionExist()
-    if (!this.doesFunctionExist()) return false
+    if (!fnExists) return false
 
     //Log start
     await evaluateExpressionAsync(wrappingExpressions.logStart)
@@ -137,7 +137,6 @@ export default class DevToolsDebugClient {
     }
 
     try {
-
       console.log('Client: Triggering wrap function.')
       await evaluateExpressionAsync(wrappingExpressions.wrapFunction)
 

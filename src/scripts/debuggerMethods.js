@@ -71,11 +71,12 @@ export function getSplitWrapperExpressionStrings(fnPath) {
   wrappingExpressions.wrapFunction =
     `${fnPath} = function(){
         let message = {}
+        
         try {
           var args = [].slice.call(arguments)
-          var argsJSON = JSON.stringify(args)
+          var argsString = JSON.stringify(args)
           method.apply(this, args)
-          message = {type: 'FUNCTION_CALL_EVENT', invocationRecord:{callArgs: argsJSON, timestamp: Date.now(), fnPath: '${fnPath}'}}
+          message = {type: 'FUNCTION_CALL_EVENT', invocationRecord:{callArgs: argsString, timestamp: Date.now(), fnPath: '${fnPath}'}}
           console.log('Function called.')
           console.log(message)
           window.postMessage(message)

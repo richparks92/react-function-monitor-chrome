@@ -6,7 +6,7 @@ import { OverlayPanel } from 'primereact'
 import { wait } from '../scripts/util/helpers'
 import './css/functionForm.css'
 
-export default function FunctionForm({ client, fnSuggestionArray, buttonActive, buttonPending }) {
+export default function FunctionForm({ Client, fnSuggestionArray, buttonActive, buttonPending }) {
     fnSuggestionArray = fnSuggestionArray || []
 
     const [filteredSuggestions, setfilteredSuggestions] = useState([])
@@ -24,15 +24,15 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
     }
 
     async function shouldWrapFn(_selectedFn) {
-        const _fnPath = client?.fnDetails?.fnPath && client.fnDetails.fnPath.length > 0 ? client.fnDetails.fnPath : undefined
-        if (_fnPath) await client.clearFnDetails()
+        const _fnPath = Client?.fnDetails?.fnPath && Client.fnDetails.fnPath.length > 0 ? Client.fnDetails.fnPath : undefined
+        if (_fnPath) await Client.clearFnDetails()
 
         if (_selectedFn.length < 1) {
             console.log("No input function.")
             return false
 
         } else {
-            const fnExists = await client.doesFunctionExist(_selectedFn);
+            const fnExists = await Client.doesFunctionExist(_selectedFn);
             
             return fnExists
         }
@@ -43,26 +43,26 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
         console.log('Button clicked.')
         const _selectedFn = selectedFn
 
-        //Handle if client is not wrapped
-        if (!client.isFnWrapped) {
+        //Handle if Client is not wrapped
+        if (!Client.isFnWrapped) {
 
             if (await shouldWrapFn(_selectedFn)) {
-                await client.setFnDetails(_selectedFn)
+                await Client.setFnDetails(_selectedFn)
                 console.log('Wrapping selected function.')
-                await client.wrapFunction()
+                await Client.wrapFunction()
             } else {
                 showOverlay(e)
                 return
             }
 
         } else {
-            //If client is wrapped
+            //If Client is wrapped
             console.log('Client is already wrapped; triggering unwrapping function.')
-            await client.unwrapFunction();
+            await Client.unwrapFunction();
         }
 
-        client.setters.updateStateFromClientDetails()
-        setInputDisabled(client.isFnWrapped)
+        Client.setters.updateStateFromClientDetails()
+        setInputDisabled(Client.isFnWrapped)
     }
 
     const searchFns = (event) => {
@@ -70,7 +70,7 @@ export default function FunctionForm({ client, fnSuggestionArray, buttonActive, 
             let _filteredSuggestions = []
             let query = event.query.trim()
             //console.log(`Query: "${query}"`)
-            const isFnWrapped = client.isFnWrapped
+            const isFnWrapped = Client.isFnWrapped
             //If fnSuggestionArray is empty then exit function
             if (fnSuggestionArray.length > 0) {
                 if (query.length > 0) {

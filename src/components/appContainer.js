@@ -8,7 +8,7 @@ import 'primeflex/primeflex.css';
 
 /*global chrome*/
 
-export default function AppContainer({ client, backgroundConnection }) {
+export default function AppContainer({ Client, backgroundConnection }) {
   console.log('AppContainer loading')
   const [buttonActive, setButtonActive] = useState(false)
   const [buttonPending, setButtonPending] = useState(false)
@@ -18,13 +18,13 @@ export default function AppContainer({ client, backgroundConnection }) {
 
   //These methods are passed to the event handlers
   const updateStateFromClientDetails = () => {
-    setFunctionInfo({ fnName: client.fnDetails.name, fnParentPath: client.fnDetails.parentPath })
-    setButtonActive(client.isFnWrapped)
-    setInvocationRecords(client.invocationRecords)
-    console.log(`Updating UI from client. Setting button to: ${client.isFnWrapped}`)
+    setFunctionInfo({ fnName: Client.fnDetails.name, fnParentPath: Client.fnDetails.parentPath })
+    setButtonActive(Client.isFnWrapped)
+    setInvocationRecords(Client.invocationRecords)
+    console.log(`Updating UI from Client. Setting button to: ${Client.isFnWrapped}`)
   }
 
-  //Initialize handlers, passing client and state update functions as argument
+  //Initialize handlers, passing Client and state update functions as argument
   const setterFunctions = {
     updateStateFromClientDetails: updateStateFromClientDetails,
     setButtonActive: setButtonActive,
@@ -35,13 +35,13 @@ export default function AppContainer({ client, backgroundConnection }) {
   }
 
 
-  console.log('Client state: ', client)
-  initializeMessageHandlers(client, setterFunctions, backgroundConnection)
-  client.addSetterFunctions(setterFunctions)
+  console.log('Client state: ', Client)
+  if(!Client.messageHandlersInitialized) initializeMessageHandlers(Client, setterFunctions, backgroundConnection)
+  Client.addSetterFunctions(setterFunctions)
 
   return (
     <div className="App-body-container">
-      <FunctionForm client={client} fnSuggestionArray={fnSuggestionArray} buttonActive={buttonActive} buttonPending={buttonPending}></FunctionForm>
+      <FunctionForm Client={Client} fnSuggestionArray={fnSuggestionArray} buttonActive={buttonActive} buttonPending={buttonPending}></FunctionForm>
       <FunctionInfoPanel functionName={functionInfo.fnName} functionParentPath={functionInfo.fnParentPath}></FunctionInfoPanel>
       <InvocationsList invocationRecords={invocationRecords} backgroundConnection={backgroundConnection}></InvocationsList>
     </div>)
