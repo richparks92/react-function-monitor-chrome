@@ -25,11 +25,16 @@ export function registerListeners() {
       this.domConnection.postMessage('Sending test message to content script')
       console.log('Initializing DOM message handlers.')
 
-      this.domConnection.onDisconnect.addListener(function () {
-        console.log('initializeMH -- port disconnected, removing listener.')
-        this.domConnection.onMessage.removeListener(handleMessagesFromDom.bind(this));
-        this.messageHandlersInitialized = false
-      });
+      this.domConnection.onDisconnect.addListener(onDisconnectListener.bind(this));
 
     }
+  }
+
+  function onDisconnectListener(port){
+
+      console.log('dom-listeners -- port disconnected, removing listener.')
+      this.injectStatus.domListenerInjected = false
+      port.onMessage.removeListener(handleMessagesFromDom.bind(this));
+      //this.messageHandlersInitialized = false
+
   }

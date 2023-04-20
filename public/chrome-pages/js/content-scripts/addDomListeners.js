@@ -1,5 +1,6 @@
-console.log('addDomListeners started.')
-let injected
+(()=>{
+  console.log('addDomListeners started.')
+let isInjected
 //Need to add disconnect listener
 function addDomListeners() {
 
@@ -22,7 +23,7 @@ function addDomListeners() {
         }
       }
     }, false)
-    injected  = true
+    isInjected  = true
     //return true
   }
   catch (e) {
@@ -40,5 +41,5 @@ function addDomListeners() {
   }
 
 }
-if (!injected) addDomListeners()
-
+if (!isInjected) addDomListeners()
+})()
