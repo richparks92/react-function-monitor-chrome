@@ -1,9 +1,9 @@
 /*global chrome*/
 import { extractArguments } from '../util/helpers.js'
 import { getSplitWrapperExpressionStrings, getSplitUnwrapperExpressionStrings, evaluateExpressionAsync } from './debuggerMethods.js'
-import { handleMessagesFromBackground } from './message-handlers/handleMessagesFromBackground.js'
-import { handleMessagesFromDom } from './message-handlers/handleMessagesFromDom.js'
+
 import { requestScriptInjection } from './requestScriptInjection.js'
+import { registerListeners } from './message-handlers/registerListeners.js'
 
 export default class DevToolsDebugClient {
   constructor(fnPath) {
@@ -14,7 +14,7 @@ export default class DevToolsDebugClient {
     this.enableWrapOnPageLoad = false
 
     this.tabId = chrome.devtools.inspectedWindow.tabId
-
+    this.registerListeners = registerListeners.bind(this)
     if (fnPath) this.setFnDetails(fnPath)
     if (!this.invocationRecords) this.invocationRecords = []
     this.backgroundPageConnection = this.createBackgroundPageConnection()
@@ -29,6 +29,7 @@ export default class DevToolsDebugClient {
     });
     return this.backgroundPageConnection
   }
+
 
   setFnDetails(fnPath) {
     (async () => await this.clearFnDetails())()
@@ -46,35 +47,6 @@ export default class DevToolsDebugClient {
     if (this.isFnWrapped) await this.unwrapFunction(this.fnDetails.path)
     this.fnDetails = {}
     this.clearInvocationRecords()
-  }
-
-  registerListeners() {
-    if (!this.messageHandlersInitialized) {
-      //Add DOM connection and listener
-      chrome.runtime.onConnect.addListener(function (port) {
-        console.log('initializeMH port onConnect. Port: ', port)
-        if (port.name == 'dom-listeners' && port.sender.tab.id == this.tabId) {
-          this.domConnection = port
-          this.domConnection.onMessage.addListener(handleMessagesFromDom)
-          this.domConnection.postMessage('Sending test message to content script')
-          console.log('Initializing DOM message handlers.')
-
-          this.domConnection.onDisconnect.addListener(function () {
-            console.log('initializeMH -- port disconnected, removing listener.')
-            this.domConnection.onMessage.removeListener(handleMessagesFromDom);
-            this.messageHandlersInitialized = false
-          });
-
-        }
-      })
-
-      console.log('Initializing background page message handlers.')
-
-      this.backgroundPageConnection.onMessage.addListener(handleMessagesFromBackground)
-      this.messageHandlersInitialized = true
-      console.log('Registering devTools listeners.')
-
-    }
   }
 
 
