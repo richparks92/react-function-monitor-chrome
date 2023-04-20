@@ -3,13 +3,14 @@ import { wait } from '../../util/helpers.js'
 
 //this is 'window' in this context
 export async function handleMessagesFromBackground(message, port) {
-  console.log('Message from background.js:', message, 'Port:', port, 'Client', this)
+
   if (message.tabId !== this.tabId) return
 
   // Handle responses from the background page, if any
   //make sure tabId is in message sent, look at structure
   if (port.name != 'devtools-page') return
-  console.log('passed port name check')
+  console.log('Message from background.js:', message, 'Port:', port, 'Client', this)
+
   switch (message.type) {
     case 'INJECT_RESULT':
 
@@ -39,7 +40,7 @@ export async function handleMessagesFromBackground(message, port) {
       }
       await wait(1000)
 
-      if (!this.getFnsInjected) {
+      if (!this.injectStatus.getFnsInjected) {
         console.log('Requesting getFunctionList script injection (window_loaded).')
         requestScriptInjection(this.backgroundPageConnection, "getFunctionList");
       }
@@ -59,8 +60,9 @@ export async function handleMessagesFromBackground(message, port) {
       console.log('before_navigate message received by devTools.');
       this.clearInvocationRecords();
       //this.injectStatus.domListenerInjected = false;
-      this.getFnsInjected = false;
+      this.injectStatus.getFnsInjected = false;
       if (this.isFnWrapped && this.enableWrapOnPageLoad) this.uiSetters.setButtonPending(true);
+      this.isFnWrapped = false
       break;
   }
 
