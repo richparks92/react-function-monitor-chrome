@@ -61,7 +61,7 @@ export default function FunctionForm({ Client, fnSuggestionArray, buttonActive, 
             await Client.unwrapFunction();
         }
 
-        Client.setters.updateStateFromClientDetails()
+        Client.uiSetters.updateStateFromClientDetails()
         setInputDisabled(Client.isFnWrapped)
     }
 

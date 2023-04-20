@@ -11,8 +11,6 @@ function addDomListeners() {
     console.log('Port message received in content script.', message)
   });
 
-//probably easier to add 
-
   try {
     window.addEventListener("message", (event) => {
       if (chrome?.runtime) {
@@ -25,11 +23,20 @@ function addDomListeners() {
       }
     }, false)
     injected  = true
-    return true
+    //return true
   }
   catch (e) {
     console.log(e)
-    return false
+    //return false
+  }
+
+  try {
+    window.addEventListener("load", (e)=>{
+      console.log('addDomListener: page loaded.')
+      domListenerPort.postMessage('___loaded event 3.0')
+    })
+  } catch(e){
+
   }
 
 }

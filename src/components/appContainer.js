@@ -1,6 +1,5 @@
 import './css/appContainer.css'
 import React, { useState } from "react";
-import {initializeMessageHandlers} from '../scripts/initializeMessageHandlers.js';
 import FunctionInfoPanel from './functionInfoPanel.js';
 import FunctionForm from './functionForm';
 import InvocationsList from './invocationsList';
@@ -36,8 +35,7 @@ export default function AppContainer({ Client, backgroundConnection }) {
 
 
   console.log('Client state: ', Client)
-  if(!Client.messageHandlersInitialized) initializeMessageHandlers(Client, setterFunctions, backgroundConnection)
-  Client.addSetterFunctions(setterFunctions)
+  Client.addUiSetterFunctions(setterFunctions)
 
   return (
     <div className="App-body-container">

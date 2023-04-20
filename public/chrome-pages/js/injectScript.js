@@ -1,12 +1,12 @@
 const scriptInjectionDetails = {
     addDomListeners: {
         target: { tabId: '', allFrames: false },
-        files: ['/chrome-pages/content-scripts/addDomListeners.js'],
+        files: ['/chrome-pages/js/content-scripts/addDomListeners.js'],
         world: 'ISOLATED'
     },
     getFunctionList: {
         target: { tabId: '', allFrames: false },
-        files: ['/chrome-pages/content-scripts/getFunctionList.js'],
+        files: ['/chrome-pages/js/content-scripts/getFunctionList.js'],
         world: 'MAIN'
     },
     copyTextToClipboard: {

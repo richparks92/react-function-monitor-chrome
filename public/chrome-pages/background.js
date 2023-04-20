@@ -1,4 +1,4 @@
-import injectScript from "./public-utils/injectScript.js"
+import injectScript from "./js/injectScript.js"
 
 /////
 //
@@ -8,12 +8,13 @@ const connections = {}
 
 // Background page -- background.js. Looks like this is being triggered twice
 chrome.runtime.onConnect.addListener(function (port) {
-    console.log('Background page-- runtime connect listener triggered. Port object: ', port)
+    console.log('[Background page] -- runtime connect listener triggered. Port object: ', port)
     //const portTabId = port.sender.tab.id
-    
+
 
     // assign the listener function to a variable so we can remove it later
     const devToolsListener = async function (message, port) {
+        //This function is getting triggered twice for some reason.
         console.log('devToolsListener function starting.')
         switch (message.type) {
             case "REQUEST_INJECTION":
@@ -74,8 +75,8 @@ chrome.runtime.onConnect.addListener(function (port) {
     }
 
     if (port.name == 'devtools-page') {
+        console.log('DevTools connected to background.js. Adding onMessage listener.')
         // add the listener
-        //Try adding to connections{}
         port.onMessage.addListener(devToolsListener);
         chrome.webNavigation.onCompleted.addListener(onCompletedHandler)
         chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigateHandler)
@@ -84,9 +85,6 @@ chrome.runtime.onConnect.addListener(function (port) {
             port.onMessage.removeListener(devToolsListener);
         });
 
-
-        console.log('Background page connections:', connections)
-        
     }
 
 });

@@ -1,18 +1,33 @@
 /*global chrome*/
-import { extractArguments } from './util/helpers.js'
+import { extractArguments } from '../util/helpers.js'
 import { getSplitWrapperExpressionStrings, getSplitUnwrapperExpressionStrings, evaluateExpressionAsync } from './debuggerMethods.js'
+import { handleMessagesFromBackground } from './message-handlers/handleMessagesFromBackground.js'
+import { handleMessagesFromDom } from './message-handlers/handleMessagesFromDom.js'
+import { requestScriptInjection } from './requestScriptInjection.js'
 
 export default class DevToolsDebugClient {
   constructor(fnPath) {
     this.fnDetails = {}
-    this.setters = {}
+    this.uiSetters = {}
+    this.injectStatus = { domListenerInjected: false, getFnsInjected: false }
     this.isFnWrapped = false
-    this.domListenerInjected = false
-    this.getFnsInjected = false
+    this.enableWrapOnPageLoad = false
+
+    this.tabId = chrome.devtools.inspectedWindow.tabId
+
     if (fnPath) this.setFnDetails(fnPath)
     if (!this.invocationRecords) this.invocationRecords = []
-    this.enableWrapOnPageLoad = false
-    this.setters.updateStateFromClientDetails = () => { console.log('No setters.updateState exists.') }
+    this.backgroundPageConnection = this.createBackgroundPageConnection()
+    this.uiSetters.updateStateFromClientDetails = () => { console.log('No setters.updateState exists.') }
+  }
+
+  createBackgroundPageConnection() {
+    console.log('Creating backgroundPageConnection.')
+
+    this.backgroundPageConnection = chrome.runtime.connect({
+      name: "devtools-page"
+    });
+    return this.backgroundPageConnection
   }
 
   setFnDetails(fnPath) {
@@ -22,7 +37,7 @@ export default class DevToolsDebugClient {
       let fnPathArray = fnPath.split('.')
       this.fnDetails.name = fnPathArray[fnPathArray.length - 1]
       if (fnPathArray.length > 1) this.fnDetails.parentPath = fnPathArray.slice(0, -1).join('.')
-      this.setters.updateStateFromClientDetails()
+      this.uiSetters.updateStateFromClientDetails()
     }
   }
 
@@ -33,9 +48,39 @@ export default class DevToolsDebugClient {
     this.clearInvocationRecords()
   }
 
-  addSetterFunctions(setters) {
+  registerListeners() {
+    if (!this.messageHandlersInitialized) {
+      //Add DOM connection and listener
+      chrome.runtime.onConnect.addListener(function (port) {
+        console.log('initializeMH port onConnect. Port: ', port)
+        if (port.name == 'dom-listeners' && port.sender.tab.id == this.tabId) {
+          this.domConnection = port
+          this.domConnection.onMessage.addListener(handleMessagesFromDom)
+          this.domConnection.postMessage('Sending test message to content script')
+          console.log('Initializing DOM message handlers.')
+
+          this.domConnection.onDisconnect.addListener(function () {
+            console.log('initializeMH -- port disconnected, removing listener.')
+            this.domConnection.onMessage.removeListener(handleMessagesFromDom);
+            this.messageHandlersInitialized = false
+          });
+
+        }
+      })
+
+      console.log('Initializing background page message handlers.')
+
+      this.backgroundPageConnection.onMessage.addListener(handleMessagesFromBackground)
+      this.messageHandlersInitialized = true
+      console.log('Registering devTools listeners.')
+
+    }
+  }
+
+
+  addUiSetterFunctions(setters) {
     for (const key in setters) {
-      this.setters[key] = setters[key]
+      this.uiSetters[key] = setters[key]
     }
   }
 
@@ -122,9 +167,9 @@ export default class DevToolsDebugClient {
     //Copy function to *_fnWrapper.originalFunctionCopy*
     try {
 
-     const res = await evaluateExpressionAsync(wrappingExpressions.copyMethod)
+      const res = await evaluateExpressionAsync(wrappingExpressions.copyMethod)
       evaluateSuccess = true
-      if (res.isException=== true){
+      if (res.isException === true) {
         console.log('Error copying original function.')
         return false
       }
@@ -152,12 +197,12 @@ export default class DevToolsDebugClient {
     await evaluateExpressionAsync(wrappingExpressions.logEnd)
 
     function onWrapSuccess(_client) {
-      console.log('Finished wrapping. evaluateSuccess:', evaluateSuccess, 'domListenerInjected: ', _client.domListenerInjected)
+      console.log('Finished wrapping. evaluateSuccess:', evaluateSuccess, 'domListenerInjected: ', _client.injectStatus.domListenerInjected)
       _client.isFnWrapped = true
     }
-    
-    if (evaluateSuccess && this.domListenerInjected) onWrapSuccess(this)
-    return evaluateSuccess && this.domListenerInjected
+
+    if (evaluateSuccess && this.injectStatus.domListenerInjected) onWrapSuccess(this)
+    return evaluateSuccess && this.injectStatus.domListenerInjected
   }
 
   async unwrapFunction() {
