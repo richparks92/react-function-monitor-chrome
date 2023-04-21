@@ -114,7 +114,7 @@ export default function InvocationsList({invocationRecords, backgroundConnection
     })
     return (
         <div className='flex flex-column p-4 gap-1'>
-            <div className='text-xl font-bold'>Function Invocations</div>
+            <div className='text-xl font-bold'>Recorded Function Calls</div>
             <SelectButton value={displayOption}
                 onChange={(e) => setDisplayOption(e.value)} options={options} optionLabel="name" />
 
