@@ -43,7 +43,9 @@ export async function evaluateExpressionAsync(expression, validationValue, retry
 
 export function getSplitWrapperExpressionStrings(fnPath) {
   let wrappingExpressions = {}
+  const fnWrapFlag = 'chrome-function-wrapper-flag'
   wrappingExpressions.functionExistsCheck = `typeof(${fnPath})==='function'`
+  wrappingExpressions.functionAlreadyWrappedCheck = `${fnPath}.toString().includes('${fnWrapFlag}')`
   wrappingExpressions.logStart = `console.log("Wrapping function [${fnPath}]")`
   wrappingExpressions.getFnStringified = `
     function getConstructorString(fn){
@@ -70,6 +72,7 @@ export function getSplitWrapperExpressionStrings(fnPath) {
 
   wrappingExpressions.wrapFunction =
     `${fnPath} = function(){
+        /*${fnWrapFlag}*/
         let message = {}
         
         try {
@@ -85,7 +88,7 @@ export function getSplitWrapperExpressionStrings(fnPath) {
         }
       }`
 
-  wrappingExpressions.logEnd = `console.log("Finished wrapping [${fnPath}] function")`
+  wrappingExpressions.logEnd = `console.log("Finished wrapping [${fnPath}]")`
   return wrappingExpressions
 
 }

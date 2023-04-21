@@ -1,8 +1,6 @@
 /*global chrome*/
 import { extractArguments } from '../util/helpers.js'
 import { getSplitWrapperExpressionStrings, getSplitUnwrapperExpressionStrings, evaluateExpressionAsync } from './debuggerMethods.js'
-
-import { requestScriptInjection } from './requestScriptInjection.js'
 import { registerListeners } from './message-handlers/registerListeners.js'
 
 export default class DevToolsDebugClient {
@@ -94,6 +92,21 @@ export default class DevToolsDebugClient {
 
   }
 
+  async isFnAlreadyWrapped(_fnPath){
+    _fnPath = _fnPath || this.fnDetails.path
+    const wrappingExpressions = getSplitWrapperExpressionStrings(_fnPath)
+    //Check if function exists
+    try {
+      const fnAlreadyWrapped = await evaluateExpressionAsync(wrappingExpressions.functionAlreadyWrappedCheck, true, 5, 100)
+      console.log(`Checking if ${_fnPath} already wrapped: `, fnAlreadyWrapped)
+      return fnAlreadyWrapped.isException ? false : fnAlreadyWrapped
+
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
   //Wrap function and if successful update isFnWrapped
   async wrapFunction() {
     if (!this.fnDetails || !this.fnDetails.path) return false
@@ -103,8 +116,14 @@ export default class DevToolsDebugClient {
 
     const wrappingExpressions = getSplitWrapperExpressionStrings(fnPath)
     //Check if function exists
-    const fnExists = await this.doesFunctionExist()
+    const fnExists = await this.doesFunctionExist(fnPath)
     if (!fnExists) return false
+    const fnAlreadyWrapped = await this.isFnAlreadyWrapped(fnPath)
+    if(fnAlreadyWrapped) {
+      onWrapSuccess(this)
+      return true
+    }
+    
 
     //Log start
     await evaluateExpressionAsync(wrappingExpressions.logStart)
@@ -115,8 +134,8 @@ export default class DevToolsDebugClient {
       const copyExists = await evaluateExpressionAsync(wrappingExpressions.copyFunctionExistsCheck)
       if (copyExists) {
         console.log('Function copy already exists.')
-        onWrapSuccess(this)
-        return true
+        //onWrapSuccess(this)
+        //return true
       }
 
     } catch (e) {

@@ -115,7 +115,7 @@ export default function FunctionForm({ Client, fnSuggestionArray, buttonActive, 
                         disabled={buttonDisabled}
                         label={buttonLabel} />
                     <OverlayPanel ref={overlayRef}>
-                        <p>That ain't no function pleighboi.</p>
+                        <p><span style={{ color: "orange", fontSize: "20px", fontWeight: "bold" }}>{selectedFn}</span> is not a function on this page.</p>
                     </OverlayPanel>
 
                 </div>

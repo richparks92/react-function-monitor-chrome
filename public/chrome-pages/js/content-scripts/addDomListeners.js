@@ -1,15 +1,15 @@
 (()=>{
-  console.log('addDomListeners started.')
+  //console.log('addDomListeners started.')
 let isInjected
 //Need to add disconnect listener
 function addDomListeners() {
 
   let domListenerPort
   if (domListenerPort) return
-  console.log('Creating "dom-listeners" port connection [addDomListeners -> initializeMessageHandlers]')
+  //console.log('Creating "dom-listeners" port connection [addDomListeners -> initializeMessageHandlers]')
   domListenerPort = chrome.runtime.connect({ name: "dom-listeners" });
   domListenerPort.onMessage.addListener(function (message) {
-    console.log('Port message received in content script.', message)
+    //console.log('Port message received in content script.', message)
   });
 
   try {
@@ -29,15 +29,6 @@ function addDomListeners() {
   catch (e) {
     console.log(e)
     //return false
-  }
-
-  try {
-    window.addEventListener("load", (e)=>{
-      console.log('addDomListener: page loaded.')
-      domListenerPort.postMessage('___loaded event 3.0')
-    })
-  } catch(e){
-
   }
 
 }
