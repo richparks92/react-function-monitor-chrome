@@ -1,70 +1,25 @@
-# Getting Started with Create React App
+# Chrome Function Monitor Extension
+
+## Features
+This extension allows you to monitor a webpage for calls of a specified function, and records and lists those function calls in a tab in the inspector. It's meant to be a simple utility to help capture what's happening on a website's frontend. Once a valid function has been entered into the UI, the extension will automatically update with the details of subsequent calls to that function, and will show details of the invocation such as the timestamp and call arguments, which can be displayed as JSON text or in a tree view. You can also copy the JSON data to the clipboard.
+![image info](./images/main-ss.png)
+![image info](./images/json-ss.png)
+![image info](./images/tree-view-ss.png)
+
+## To install
+The extension isn't published to the Chrome Web Store yet as it's currently being reviewed for publishing. To install:
+1. Clone this repository onto your hard drive.
+2. Follow the **Loading an unpacked extension** steps here, using the `build` folder from this repository as the extension directory: [https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## How to use
 
-In the project directory, you can run:
+1. Navigate to any website and open the Inspector (right click within the webpage and select "Inspect" from the context menu). 
+2. Right click and open the inspector, then find the "Function Monitor" tab.
+![image info](./images/tab-location.png)
+3. Type in the name of a function that exists on the frontend of the webpage (eg `window.dataLayer.push`)- autocomplete will bring up some suggestions of functions the extension has found.
+4. Click "Enable Listener." The extension will automatically attempt to re-register the function call listener on refresh and page navigation.
 
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Development
+This UI for this project was created using React and PrimeReact.
