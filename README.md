@@ -2,9 +2,7 @@
 
 ## Features
 This extension allows you to monitor a webpage for calls of a specified function, and records and lists those function calls in a tab in the inspector. It's meant to be a simple utility to help capture what's happening on a website's frontend. Once a valid function has been entered into the UI, the extension will automatically update with the details of subsequent calls to that function, and will show details of the invocation such as the timestamp and call arguments, which can be displayed as JSON text or in a tree view. You can also copy the JSON data to the clipboard.
-![image info](./images/main-ss.png)
-![image info](./images/json-ss.png)
-![image info](./images/tree-view-ss.png)
+![Extension Demo](./images/function-monitor-demo.gif)
 
 ## To install
 The extension isn't published to the Chrome Web Store yet as it's currently being reviewed for publishing. To install:
