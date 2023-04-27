@@ -13,8 +13,6 @@
         "activeTab",
         "scripting",
         "tabs",
-        "debugger",
-        "webRequest",
         "webNavigation",
         "clipboardWrite"
     ],
