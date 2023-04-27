@@ -1,6 +1,6 @@
 {
     "name": "Function Monitor",
-    "version": "0.9.0",
+    "version": "1.0.0",
     "description": "Monitor a webpage for function invocations, using the inspector.",
     "manifest_version": 3,
     "author": "Chris Parks",
