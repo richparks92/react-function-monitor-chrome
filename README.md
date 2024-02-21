@@ -9,7 +9,7 @@ This extension allows you to monitor a webpage for calls of a specified function
 The extension is published to the Chrome Web Store. You can install here: https://chromewebstore.google.com/detail/function-monitor/hhicpplhdikhhcogaibidfhimkblipko?hl=en&authuser=2.
 
 ## How to use
-Please see the post in my portfolio for a video demonstration of how the extension works: https://richchrisparks.com/wp-admin/post.php?post=61&action=edit. 
+Please see the post in my portfolio for a video demonstration of how the extension works: https://richchrisparks.com/creating-a-google-web-extension-with-node-and-react/. 
 1. Navigate to any website and open the Inspector (right click within the webpage and select "Inspect" from the context menu). 
 2. Right click and open the inspector, then find the "Function Monitor" tab.
 ![image info](./images/tab-location.png)
